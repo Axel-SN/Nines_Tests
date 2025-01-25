@@ -66,6 +66,7 @@ function prizeSelect(prizes, value) {
 const x = 9;
 let check = 0;
 const pv = "Prize if you chose ";
+const startValue = Math.floor(Math.random() * 9);
 
 // an array to showcase the prizes available for each cross sum
 const prizes = [
@@ -94,6 +95,18 @@ const prizes = [
 const ninesClean = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const nines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const shuffledNines = shuffleArray(nines);
+const ninesFull = [
+  { value: shuffledNines[0], visib: false },
+  { value: shuffledNines[1], visib: false },
+  { value: shuffledNines[2], visib: false },
+  { value: shuffledNines[3], visib: false },
+  { value: shuffledNines[4], visib: false },
+  { value: shuffledNines[5], visib: false },
+  { value: shuffledNines[6], visib: false },
+  { value: shuffledNines[7], visib: false },
+  { value: shuffledNines[8], visib: false },
+];
+ninesFull[startValue].visib = true;
 
 // define the structures for rows, columns and diagonals in a given set of nines by creating multiple arrays
 const row1 = [shuffledNines[0], shuffledNines[1], shuffledNines[2]];
@@ -111,6 +124,8 @@ const diagonals = [diagonalLeft, diagonalRight];
 // output the base array and the shuffled array
 console.log("Base Array: " + ninesClean);
 console.log("Shuffled Array: " + shuffledNines);
+console.log(ninesFull);
+console.log("startvalue: " + startValue);
 
 // output the array in a three be three row/column format for better visualization
 console.log("Three by three:");
@@ -165,3 +180,6 @@ for (let d = 0; d < diagonals.length; d++) {
       prizes[prizeSelect(prizes, crossSum(diagonals[d]))].prize
   );
 }
+
+let test = prompt("Who r u?");
+console.log("So you are: " + test);
