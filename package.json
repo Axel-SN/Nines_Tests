@@ -1,0 +1,25 @@
+{
+  "name": "ninestests",
+  "version": "1.0.0",
+  "description": "nines tests",
+  "main": "Nines_Basics.js",
+  "scripts": {
+    "test": "ninestests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Axel-SN/Nines_Tests.git"
+  },
+  "keywords": [
+    "nines"
+  ],
+  "author": "Axel-SN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Axel-SN/Nines_Tests/issues"
+  },
+  "homepage": "https://github.com/Axel-SN/Nines_Tests#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}
