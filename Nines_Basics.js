@@ -43,6 +43,21 @@ function threebythree(array) {
   }
 }
 
+function threebythreeNines(nineArray, args) {
+  // switch case for loop -> if i is in args -> add nineArray[arg] to array, otherwise push O
+  let tempArray = [];
+
+  for (let i = 0; i < nineArray.length; i++) {
+    if (args.includes(i)) {
+      tempArray.push(nineArray[i]);
+    } else {
+      tempArray.push("X");
+    }
+  }
+
+  threebythree(tempArray);
+}
+
 // A function that calculates the cross sum of a given set of numbers as an array
 function crossSum(array) {
   let sum = 0;
@@ -67,6 +82,7 @@ const x = 9;
 let check = 0;
 const pv = "Prize if you chose ";
 const startValue = Math.floor(Math.random() * 9);
+const prompt = require("prompt-sync")();
 
 // an array to showcase the prizes available for each cross sum
 const prizes = [
@@ -106,6 +122,8 @@ const ninesFull = [
   { value: shuffledNines[7], visib: false },
   { value: shuffledNines[8], visib: false },
 ];
+const visibles = [];
+visibles.push(startValue);
 ninesFull[startValue].visib = true;
 
 // define the structures for rows, columns and diagonals in a given set of nines by creating multiple arrays
@@ -130,6 +148,9 @@ console.log("startvalue: " + startValue);
 // output the array in a three be three row/column format for better visualization
 console.log("Three by three:");
 threebythree(shuffledNines);
+console.log("Three by three with hidden:");
+threebythreeNines(shuffledNines, visibles);
+//threebythreeNines(shuffledNines, [1, 3, 5, 6, 7, 8]);
 
 // calculate and output the cross sum of each row, column and diagonal
 console.log("Cross sum of row1: " + crossSum(row1));
@@ -181,5 +202,5 @@ for (let d = 0; d < diagonals.length; d++) {
   );
 }
 
-let test = prompt("Who r u?");
-console.log("So you are: " + test);
+//let test = prompt("Who r u?");
+//console.log("So you are: " + test);
