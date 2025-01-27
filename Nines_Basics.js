@@ -77,6 +77,243 @@ function prizeSelect(prizes, value) {
   return 0;
 }
 
+function revealing(nineArray, visibles) {
+  let input;
+  let flag = true;
+  for (let i = 0; i < 3; i++) {
+    //console.log("test i : " + i);
+    do {
+      input = prompt("\x1b[34mWhich one do you want to reveal? \x1b[0m");
+      flag = false;
+      switch (input) {
+        case "1":
+          if (visibles.includes(1 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(1 - 1);
+
+          break;
+        case "2":
+          if (visibles.includes(2 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(2 - 1);
+
+          break;
+        case "3":
+          if (visibles.includes(3 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(3 - 1);
+
+          break;
+        case "4":
+          if (visibles.includes(4 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(4 - 1);
+
+          break;
+        case "5":
+          if (visibles.includes(5 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(5 - 1);
+
+          break;
+        case "6":
+          if (visibles.includes(6 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(6 - 1);
+
+          break;
+        case "7":
+          if (visibles.includes(7 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(7 - 1);
+
+          break;
+        case "8":
+          if (visibles.includes(8 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(8 - 1);
+
+          break;
+        case "9":
+          if (visibles.includes(9 - 1)) {
+            console.log("This slot is already revealed!");
+            flag = true;
+            break;
+          }
+          visibles.push(9 - 1);
+
+          break;
+        default:
+          console.log(
+            "\x1b[35m Please select a slot that is not revealed yet."
+          );
+          flag = true;
+      }
+    } while (flag);
+    console.log(visibles);
+    //break;
+    threebythreeNines(nineArray, visibles);
+  }
+  //threebythreeNines(nineArray, visibles);
+}
+
+function setSelect(nineArray, prizes) {
+  //console.log("What will you choose?");
+  let sumString = ". The cross sum is: ";
+  let prizeString = ". Your prize is: ";
+  let selectString = " was selected! Your numbers are: ";
+  let input;
+  let flag = false;
+  const row1 = [nineArray[0], nineArray[1], nineArray[2]];
+  const row2 = [nineArray[3], nineArray[4], nineArray[5]];
+  const row3 = [nineArray[6], nineArray[7], nineArray[8]];
+  const column1 = [nineArray[0], nineArray[3], nineArray[6]];
+  const column2 = [nineArray[1], nineArray[4], nineArray[7]];
+  const column3 = [nineArray[2], nineArray[5], nineArray[8]];
+  const diagonalLeft = [nineArray[0], nineArray[4], nineArray[8]];
+  const diagonalRight = [nineArray[2], nineArray[4], nineArray[6]];
+
+  do {
+    input = prompt(
+      "\x1b[34mWhich set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) \x1b[0m"
+    );
+    switch (input) {
+      case "row1":
+        console.log(
+          "row1" +
+            selectString +
+            row1 +
+            sumString +
+            crossSum(row1) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(row1))].prize
+        );
+        flag = false;
+        break;
+      case "row2":
+        console.log(
+          "row2" +
+            selectString +
+            row2 +
+            sumString +
+            crossSum(row2) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(row2))].prize
+        );
+        flag = false;
+        break;
+      case "row3":
+        console.log(
+          "row3" +
+            selectString +
+            row3 +
+            sumString +
+            crossSum(row3) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(row3))].prize
+        );
+        flag = false;
+        break;
+      case "column1":
+        console.log(
+          "column1" +
+            selectString +
+            column1 +
+            sumString +
+            crossSum(column1) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(column1))].prize
+        );
+        flag = false;
+        break;
+      case "column2":
+        console.log(
+          "column2" +
+            selectString +
+            column2 +
+            sumString +
+            crossSum(column2) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(column2))].prize
+        );
+        flag = false;
+        break;
+      case "column3":
+        console.log(
+          "column3" +
+            selectString +
+            column3 +
+            sumString +
+            crossSum(column3) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(column3))].prize
+        );
+        flag = false;
+        break;
+      case "diagonal left":
+        console.log(
+          "diagonal left" +
+            selectString +
+            diagonalLeft +
+            sumString +
+            crossSum(diagonalLeft) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(diagonalLeft))].prize
+        );
+        flag = false;
+        break;
+      case "diagonal right":
+        console.log(
+          "diagonal right" +
+            selectString +
+            diagonalRight +
+            sumString +
+            crossSum(diagonalRight) +
+            prizeString +
+            prizes[prizeSelect(prizes, crossSum(diagonalRight))].prize
+        );
+        flag = false;
+        break;
+      default:
+        console.log(
+          "\x1b[35m Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right) \x1b[0m"
+        );
+        flag = true;
+    }
+  } while (flag);
+}
+
+function gameStart(nineArray, args, prizes) {
+  revealing(nineArray, args);
+  setSelect(nineArray, prizes);
+}
+
+// Actual start of things //
+
 // variables for quick testing purposes
 const x = 9;
 let check = 0;
@@ -139,17 +376,21 @@ const diagonalLeft = [shuffledNines[0], shuffledNines[4], shuffledNines[8]];
 const diagonalRight = [shuffledNines[2], shuffledNines[4], shuffledNines[6]];
 const diagonals = [diagonalLeft, diagonalRight];
 
+// Control outputs //
+console.log("\x1b[32m //// CONTROL OUTPUTS //// \x1b[0m");
+
 // output the base array and the shuffled array
 console.log("Base Array: " + ninesClean);
 console.log("Shuffled Array: " + shuffledNines);
-console.log(ninesFull);
+//console.log(ninesFull);
 console.log("startvalue: " + startValue);
+console.log(visibles);
 
 // output the array in a three be three row/column format for better visualization
 console.log("Three by three:");
 threebythree(shuffledNines);
-console.log("Three by three with hidden:");
-threebythreeNines(shuffledNines, visibles);
+//console.log("Three by three with hidden:");
+//threebythreeNines(shuffledNines, visibles);
 //threebythreeNines(shuffledNines, [1, 3, 5, 6, 7, 8]);
 
 // calculate and output the cross sum of each row, column and diagonal
@@ -204,3 +445,9 @@ for (let d = 0; d < diagonals.length; d++) {
 
 //let test = prompt("Who r u?");
 //console.log("So you are: " + test);
+
+console.log("\x1b[32m //// Start of the game //// \x1b[0m");
+console.log("\x1b[34mThree by three with hidden: \x1b[0m");
+threebythreeNines(shuffledNines, visibles);
+gameStart(shuffledNines, visibles, prizes);
+console.log("\x1b[32m //// End of the game //// \x1b[0m");
