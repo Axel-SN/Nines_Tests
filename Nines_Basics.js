@@ -77,6 +77,9 @@ function prizeSelect(prizes, value) {
   return 0;
 }
 
+// A function that is supposed to simulate the player choosing three spots to reveal, the only accepted inputs should be unrevealed numbers, to not have to deal with edge cases and faulty inputs.
+
+/*
 function revealing(nineArray, visibles) {
   let input;
   let flag = true;
@@ -175,10 +178,36 @@ function revealing(nineArray, visibles) {
       }
     } while (flag);
     console.log(visibles);
-    //break;
     threebythreeNines(nineArray, visibles);
   }
   //threebythreeNines(nineArray, visibles);
+}
+*/
+
+// Refactored version of the revealing function.
+function revealing2(nineArray, visibles) {
+  let input;
+  for (let i = 0; i < 3; i++) {
+    input = prompt("\x1b[34mWhich one do you want to reveal? \x1b[0m");
+    input = parseInt(input);
+    //console.log("input: " + input);
+    if (nineArray.includes(input) && !visibles.includes(input - 1)) {
+      visibles.push(input - 1);
+      //console.log("for1: " + input + " i: " + i);
+    } else if (nineArray.includes(input) && visibles.includes(input - 1)) {
+      console.log("This slot is already revealed!");
+      i--;
+      //console.log("for2: " + input + " i: " + i);
+    } else {
+      console.log(
+        "\x1b[35m Please select a slot (1, 2, 3, 4, 5, 6, 7, 8, 9) that is not revealed yet."
+      );
+      i--;
+      //console.log("for3: " + input + " i: " + i);
+    }
+    console.log(visibles);
+    threebythreeNines(nineArray, visibles);
+  }
 }
 
 function setSelect(nineArray, prizes) {
@@ -308,7 +337,8 @@ function setSelect(nineArray, prizes) {
 }
 
 function gameStart(nineArray, args, prizes) {
-  revealing(nineArray, args);
+  //revealing(nineArray, args);
+  revealing2(nineArray, args);
   setSelect(nineArray, prizes);
 }
 
