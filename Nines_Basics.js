@@ -25,7 +25,7 @@ function addNewRandomNumber(array, number) {
   }
 }
 
-//
+// end of test functions
 
 // A function to implement the Fisher–Yates shuffle for arrays - code snippet found online
 function shuffleArray(array) {
@@ -43,8 +43,8 @@ function threebythree(array) {
   }
 }
 
+// This function aims to display a set of nine numbers, but only for numbers present in the args array, anything else will be marked with an X
 function threebythreeNines(nineArray, args) {
-  // switch case for loop -> if i is in args -> add nineArray[arg] to array, otherwise push O
   let tempArray = [];
 
   for (let i = 0; i < nineArray.length; i++) {
@@ -78,112 +78,6 @@ function prizeSelect(prizes, value) {
 }
 
 // A function that is supposed to simulate the player choosing three spots to reveal, the only accepted inputs should be unrevealed numbers, to not have to deal with edge cases and faulty inputs.
-
-/*
-function revealing(nineArray, visibles) {
-  let input;
-  let flag = true;
-  for (let i = 0; i < 3; i++) {
-    //console.log("test i : " + i);
-    do {
-      input = prompt("\x1b[34mWhich one do you want to reveal? \x1b[0m");
-      flag = false;
-      switch (input) {
-        case "1":
-          if (visibles.includes(1 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(1 - 1);
-
-          break;
-        case "2":
-          if (visibles.includes(2 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(2 - 1);
-
-          break;
-        case "3":
-          if (visibles.includes(3 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(3 - 1);
-
-          break;
-        case "4":
-          if (visibles.includes(4 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(4 - 1);
-
-          break;
-        case "5":
-          if (visibles.includes(5 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(5 - 1);
-
-          break;
-        case "6":
-          if (visibles.includes(6 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(6 - 1);
-
-          break;
-        case "7":
-          if (visibles.includes(7 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(7 - 1);
-
-          break;
-        case "8":
-          if (visibles.includes(8 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(8 - 1);
-
-          break;
-        case "9":
-          if (visibles.includes(9 - 1)) {
-            console.log("This slot is already revealed!");
-            flag = true;
-            break;
-          }
-          visibles.push(9 - 1);
-
-          break;
-        default:
-          console.log(
-            "\x1b[35m Please select a slot that is not revealed yet."
-          );
-          flag = true;
-      }
-    } while (flag);
-    console.log(visibles);
-    threebythreeNines(nineArray, visibles);
-  }
-  //threebythreeNines(nineArray, visibles);
-}
-*/
-
 // Refactored version of the revealing function.
 function revealing2(nineArray, visibles) {
   let input;
@@ -210,13 +104,13 @@ function revealing2(nineArray, visibles) {
   }
 }
 
-function setSelect(nineArray, prizes) {
-  //console.log("What will you choose?");
+// This function aims to have the player select which set to choose as their final answer. The player will be asked to input a valid set, otherwise they will contiuously get asked to input a valid one. The output message will be the selected set, its cross sum and the prize
+function setSelect2(nineArray, prizes) {
   let sumString = ". The cross sum is: ";
   let prizeString = ". Your prize is: ";
   let selectString = " was selected! Your numbers are: ";
   let input;
-  let flag = false;
+  let flag = true;
   const row1 = [nineArray[0], nineArray[1], nineArray[2]];
   const row2 = [nineArray[3], nineArray[4], nineArray[5]];
   const row3 = [nineArray[6], nineArray[7], nineArray[8]];
@@ -225,130 +119,53 @@ function setSelect(nineArray, prizes) {
   const column3 = [nineArray[2], nineArray[5], nineArray[8]];
   const diagonalLeft = [nineArray[0], nineArray[4], nineArray[8]];
   const diagonalRight = [nineArray[2], nineArray[4], nineArray[6]];
+  const optionsFull = [
+    { name: "row1", set: row1 },
+    { name: "row2", set: row2 },
+    { name: "row3", set: row3 },
+    { name: "column1", set: column1 },
+    { name: "column2", set: column2 },
+    { name: "column3", set: column3 },
+    { name: "diagonal left", set: diagonalLeft },
+    { name: "diagonal right", set: diagonalRight },
+  ];
 
   do {
     input = prompt(
       "\x1b[34mWhich set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) \x1b[0m"
     );
-    switch (input) {
-      case "row1":
-        console.log(
-          "row1" +
-            selectString +
-            row1 +
-            sumString +
-            crossSum(row1) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(row1))].prize
-        );
-        flag = false;
-        break;
-      case "row2":
-        console.log(
-          "row2" +
-            selectString +
-            row2 +
-            sumString +
-            crossSum(row2) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(row2))].prize
-        );
-        flag = false;
-        break;
-      case "row3":
-        console.log(
-          "row3" +
-            selectString +
-            row3 +
-            sumString +
-            crossSum(row3) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(row3))].prize
-        );
-        flag = false;
-        break;
-      case "column1":
-        console.log(
-          "column1" +
-            selectString +
-            column1 +
-            sumString +
-            crossSum(column1) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(column1))].prize
-        );
-        flag = false;
-        break;
-      case "column2":
-        console.log(
-          "column2" +
-            selectString +
-            column2 +
-            sumString +
-            crossSum(column2) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(column2))].prize
-        );
-        flag = false;
-        break;
-      case "column3":
-        console.log(
-          "column3" +
-            selectString +
-            column3 +
-            sumString +
-            crossSum(column3) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(column3))].prize
-        );
-        flag = false;
-        break;
-      case "diagonal left":
-        console.log(
-          "diagonal left" +
-            selectString +
-            diagonalLeft +
-            sumString +
-            crossSum(diagonalLeft) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(diagonalLeft))].prize
-        );
-        flag = false;
-        break;
-      case "diagonal right":
-        console.log(
-          "diagonal right" +
-            selectString +
-            diagonalRight +
-            sumString +
-            crossSum(diagonalRight) +
-            prizeString +
-            prizes[prizeSelect(prizes, crossSum(diagonalRight))].prize
-        );
-        flag = false;
-        break;
-      default:
-        console.log(
-          "\x1b[35m Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right) \x1b[0m"
-        );
-        flag = true;
+    if (optionsFull.some((x) => x.name === input)) {
+      inputFound = optionsFull.find((x) => x.name === input).set;
+      console.log(
+        input +
+          selectString +
+          inputFound +
+          sumString +
+          crossSum(inputFound) +
+          prizeString +
+          prizes[prizeSelect(prizes, crossSum(inputFound))].prize
+      );
+      flag = false;
+    } else {
+      console.log(
+        "\x1b[35m Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right) \x1b[0m"
+      );
     }
   } while (flag);
 }
 
+// Function that starts the game.
 function gameStart(nineArray, args, prizes) {
-  //revealing(nineArray, args);
   revealing2(nineArray, args);
-  setSelect(nineArray, prizes);
+  setSelect2(nineArray, prizes);
 }
 
 // Actual start of things //
 
-// variables for quick testing purposes
-const x = 9;
-let check = 0;
+// variables
 const pv = "Prize if you chose ";
 const startValue = Math.floor(Math.random() * 9);
+// initialize the usage of the prompt function to allow for user input
 const prompt = require("prompt-sync")();
 
 // an array to showcase the prizes available for each cross sum
@@ -374,7 +191,7 @@ const prizes = [
   { sum: 24, prize: 3600 },
 ];
 
-// create a basic array of 9 numbers, then create a shuffled array for each instance of a nines game
+// create a basic array of nine numbers, then create a shuffled array for each instance of a nines game
 const ninesClean = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const nines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const shuffledNines = shuffleArray(nines);
@@ -405,6 +222,16 @@ const columns = [column1, column2, column3];
 const diagonalLeft = [shuffledNines[0], shuffledNines[4], shuffledNines[8]];
 const diagonalRight = [shuffledNines[2], shuffledNines[4], shuffledNines[6]];
 const diagonals = [diagonalLeft, diagonalRight];
+const setsFull = [
+  { name: "row1", set: row1 },
+  { name: "row2", set: row2 },
+  { name: "row3", set: row3 },
+  { name: "column1", set: column1 },
+  { name: "column2", set: column2 },
+  { name: "column3", set: column3 },
+  { name: "diagonal left", set: diagonalLeft },
+  { name: "diagonal right", set: diagonalRight },
+];
 
 // Control outputs //
 console.log("\x1b[32m //// CONTROL OUTPUTS //// \x1b[0m");
@@ -438,43 +265,16 @@ console.log(
 );
 
 // Show the prize of each cross sum for the given set of nines
-
-for (let r = 0; r < rows.length; r++) {
+setsFull.forEach(function (set) {
   console.log(
     pv +
-      "row" +
-      (r + 1) +
+      set.name +
       " = " +
-      crossSum(rows[r]) +
+      crossSum(set.set) +
       ": " +
-      prizes[prizeSelect(prizes, crossSum(rows[r]))].prize
+      prizes[prizeSelect(prizes, crossSum(set.set))].prize
   );
-}
-for (let c = 0; c < columns.length; c++) {
-  console.log(
-    pv +
-      "column" +
-      (c + 1) +
-      " = " +
-      crossSum(rows[c]) +
-      ": " +
-      prizes[prizeSelect(prizes, crossSum(columns[c]))].prize
-  );
-}
-for (let d = 0; d < diagonals.length; d++) {
-  console.log(
-    pv +
-      "diagonal" +
-      (d + 1) +
-      " = " +
-      crossSum(diagonals[d]) +
-      ": " +
-      prizes[prizeSelect(prizes, crossSum(diagonals[d]))].prize
-  );
-}
-
-//let test = prompt("Who r u?");
-//console.log("So you are: " + test);
+});
 
 console.log("\x1b[32m //// Start of the game //// \x1b[0m");
 console.log("\x1b[34mThree by three with hidden: \x1b[0m");
