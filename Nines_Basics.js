@@ -1,3 +1,7 @@
+// importing chalk for better visibility in
+import chalk from "chalk";
+import promptSync from "prompt-sync";
+
 // A function to implement the Fisher–Yates shuffle for arrays - code snippet found online
 function shuffleArray(array) {
   for (let i = array.length - 1; i >= 1; i--) {
@@ -10,7 +14,13 @@ function shuffleArray(array) {
 // A funtion to output an array containing nine elements in a three by three format to showcase rows and columns better
 function threebythree(array) {
   for (let i = 0; i < 8; i = i + 3) {
-    console.log(array[i] + " - " + array[i + 1] + " - " + array[i + 2]);
+    console.log(
+      chalk.magentaBright(array[i]) +
+        " - " +
+        chalk.magentaBright(array[i + 1]) +
+        " - " +
+        chalk.magentaBright(array[i + 2])
+    );
   }
 }
 
@@ -53,24 +63,27 @@ function prizeSelect(prizes, value) {
 function revealing2(nineArray, visibles) {
   let input;
   for (let i = 0; i < 3; i++) {
-    input = prompt("\x1b[34mWhich one do you want to reveal? \x1b[0m");
+    input = prompt(chalk.blue("Which one do you want to reveal? "));
     input = parseInt(input);
     //console.log("input: " + input);
     if (nineArray.includes(input) && !visibles.includes(input - 1)) {
       visibles.push(input - 1);
       //console.log("for1: " + input + " i: " + i);
     } else if (nineArray.includes(input) && visibles.includes(input - 1)) {
-      console.log("This slot is already revealed!");
+      console.log(chalk.red("This slot is already revealed!"));
       i--;
       //console.log("for2: " + input + " i: " + i);
     } else {
       console.log(
-        "\x1b[35m Please select a slot (1, 2, 3, 4, 5, 6, 7, 8, 9) that is not revealed yet."
+        chalk.red(
+          "Please select a slot (1, 2, 3, 4, 5, 6, 7, 8, 9) that is not revealed yet."
+        )
       );
       i--;
       //console.log("for3: " + input + " i: " + i);
     }
-    console.log(visibles);
+    // control output to check if the revealed slots are correct
+    //console.log(visibles);
     threebythreeNines(nineArray, visibles);
   }
 }
@@ -81,6 +94,7 @@ function setSelect2(nineArray, prizes) {
   let prizeString = ". Your prize is: ";
   let selectString = " was selected! Your numbers are: ";
   let input;
+  let inputFound;
   let flag = true;
   const row1 = [nineArray[0], nineArray[1], nineArray[2]];
   const row2 = [nineArray[3], nineArray[4], nineArray[5]];
@@ -103,23 +117,30 @@ function setSelect2(nineArray, prizes) {
 
   do {
     input = prompt(
-      "\x1b[34mWhich set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) \x1b[0m"
+      chalk.blue(
+        "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
+      )
     );
+
     if (optionsFull.some((x) => x.name === input)) {
       inputFound = optionsFull.find((x) => x.name === input).set;
       console.log(
-        input +
+        chalk.yellow(input) +
           selectString +
-          inputFound +
+          chalk.yellow(inputFound) +
           sumString +
-          crossSum(inputFound) +
+          chalk.greenBright(crossSum(inputFound)) +
           prizeString +
-          prizes[prizeSelect(prizes, crossSum(inputFound))].prize
+          chalk.greenBright(
+            prizes[prizeSelect(prizes, crossSum(inputFound))].prize
+          )
       );
       flag = false;
     } else {
       console.log(
-        "\x1b[35m Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right) \x1b[0m"
+        chalk.red(
+          "Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right)"
+        )
       );
     }
   } while (flag);
@@ -137,7 +158,8 @@ function gameStart(nineArray, args, prizes) {
 const pv = "Prize if you chose ";
 const startValue = Math.floor(Math.random() * 9);
 // initialize the usage of the prompt function to allow for user input
-const prompt = require("prompt-sync")();
+//const prompt = require("prompt-sync")();
+const prompt = promptSync();
 
 // an array to showcase the prizes available for each cross sum
 const prizes = [
@@ -205,7 +227,8 @@ const setsFull = [
 ];
 
 // Control outputs //
-console.log("\x1b[32m //// CONTROL OUTPUTS //// \x1b[0m");
+
+console.log(chalk.green(" //// CONTROL OUTPUTS ////"));
 
 // output the base array and the shuffled array
 console.log("Base Array: " + ninesClean);
@@ -247,8 +270,10 @@ setsFull.forEach(function (set) {
   );
 });
 
-console.log("\x1b[32m //// Start of the game //// \x1b[0m");
-console.log("\x1b[34mThree by three with hidden: \x1b[0m");
+console.log(chalk.green(" //// Start of the game ////"));
+
+console.log(chalk.blue("Three by three with hidden:"));
 threebythreeNines(shuffledNines, visibles);
 gameStart(shuffledNines, visibles, prizes);
-console.log("\x1b[32m //// End of the game //// \x1b[0m");
+
+console.log(chalk.green(" //// End of the game ////"));
