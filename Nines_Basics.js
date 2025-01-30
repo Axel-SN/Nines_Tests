@@ -1,32 +1,3 @@
-// Test functions from the first attempts at creating a randomized array, kept here in case they are useful for now
-
-function arrayCheck(array, number) {
-  let breakpoint = 0;
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] == number) {
-      breakpoint++;
-    }
-    if (breakpoint > 1) return true;
-  }
-  return false;
-}
-
-function printArray(array) {
-  for (let i = 0; i < array.length; i++) {
-    console.log(array[i]);
-  }
-}
-
-function addNewRandomNumber(array, number) {
-  if (array.includes(number)) {
-    return number;
-  } else {
-    return addNewRandomNumber(array, Math.floor(Math.random() * 9) + 1);
-  }
-}
-
-// end of test functions
-
 // A function to implement the Fisher–Yates shuffle for arrays - code snippet found online
 function shuffleArray(array) {
   for (let i = array.length - 1; i >= 1; i--) {
