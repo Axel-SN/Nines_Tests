@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Axel-SN/Nines_Tests#readme",
   "dependencies": {
+    "chalk": "^5.4.1",
     "prompt-sync": "^4.2.0"
   }
 }
