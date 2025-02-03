@@ -60,7 +60,7 @@ function prizeSelect(prizes, value) {
 
 // A function that is supposed to simulate the player choosing three spots to reveal, the only accepted inputs should be unrevealed numbers, to not have to deal with edge cases and faulty inputs.
 // Refactored version of the revealing function.
-function revealing2(nineArray, visibles) {
+function revealing2(nineArray, visibles, prizes, fullNines) {
   let input;
   for (let i = 0; i < 3; i++) {
     input = prompt(chalk.blue("Which one do you want to reveal? "));
@@ -85,6 +85,7 @@ function revealing2(nineArray, visibles) {
     // control output to check if the revealed slots are correct
     //console.log(visibles);
     threebythreeNines(nineArray, visibles);
+    solverPrimitive(nineArray, visibles, prizes, fullNines);
   }
 }
 
@@ -146,9 +147,292 @@ function setSelect2(nineArray, prizes) {
   } while (flag);
 }
 
+function unrevealed(nineArray, visibles) {
+  const nine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let toCut = [];
+  let leftovers = [];
+
+  for (let i = 0; i < visibles.length; i++) {
+    toCut.push(nineArray[visibles[i]]);
+  }
+
+  leftovers = nine.filter(function (element) {
+    return !toCut.includes(element);
+  });
+
+  return leftovers;
+  //console.log("to cut: " + toCut);
+  //console.log("leftovers: " + leftovers);
+}
+
+// primitive solving function tests
+// try to ascertain results for a fully revealed set
+// try to ascertain possible results for sets only missing one numbers
+// try to ascertain possible results for sets missing two numbers
+function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
+  let toCut = [];
+
+  let amount = 0;
+  let count = 0;
+
+  let options = [];
+
+  let best = { option: "abc", value: 0 };
+
+  for (let i = 0; i < visibles.length; i++) {
+    toCut.push(nineArray[visibles[i]]);
+  }
+
+  for (let j = 0; j < visibles.length; j++) {
+    ninesFull[visibles[j]].visib = true;
+  }
+
+  let leftovers = unrevealed(nineArray, visibles);
+
+  // control output
+  //console.log(ninesFull);
+  console.log("leftovers: " + leftovers);
+
+  const row1 = [ninesFull[0], ninesFull[1], ninesFull[2]];
+  const row2 = [ninesFull[3], ninesFull[4], ninesFull[5]];
+  const row3 = [ninesFull[6], ninesFull[7], ninesFull[8]];
+  const column1 = [ninesFull[0], ninesFull[3], ninesFull[6]];
+  const column2 = [ninesFull[1], ninesFull[4], ninesFull[7]];
+  const column3 = [ninesFull[2], ninesFull[5], ninesFull[8]];
+  const diagonalLeft = [ninesFull[0], ninesFull[4], ninesFull[8]];
+  const diagonalRight = [ninesFull[2], ninesFull[4], ninesFull[6]];
+
+  const sets = [
+    { name: "row1", set: row1 },
+    { name: "row2", set: row2 },
+    { name: "row3", set: row3 },
+    { name: "column1", set: column1 },
+    { name: "column2", set: column2 },
+    { name: "column3", set: column3 },
+    { name: "diagonal left", set: diagonalLeft },
+    { name: "diagonal right", set: diagonalRight },
+  ];
+
+  /*const sets = [
+    row1,
+    row2,
+    row3,
+    column1,
+    column2,
+    column3,
+    diagonalLeft,
+    diagonalRight,
+  ];*/
+
+  //console.log("sets0 0 : " + sets[0][0].value);
+
+  sets.forEach(function (element) {
+    if (element.set[0].visib && element.set[1].visib && element.set[2].visib) {
+      //console.log("Current element: " + element.name);
+      console.log(chalk.magentaBright("Full set detected! " + element.name));
+
+      //console.log(element.set);
+
+      //console.log("aaa " + element.set[0].value);
+
+      console.log(
+        chalk.green(
+          "If you choose this one: " +
+            crossSum([
+              element.set[0].value,
+              element.set[1].value,
+              element.set[2].value,
+            ]) +
+            ": " +
+            prizes[
+              prizeSelect(
+                prizes,
+                crossSum([
+                  element.set[0].value,
+                  element.set[1].value,
+                  element.set[2].value,
+                ])
+              )
+            ].prize
+        )
+      );
+      options.push({
+        option: element.name,
+        value:
+          prizes[
+            prizeSelect(
+              prizes,
+              crossSum([
+                element.set[0].value,
+                element.set[1].value,
+                element.set[2].value,
+              ])
+            )
+          ].prize,
+      });
+    } else if (
+      (element.set[0].visib && element.set[1].visib && !element.set[2].visib) ||
+      (element.set[1].visib && element.set[2].visib && !element.set[0].visib) ||
+      (element.set[0].visib && element.set[2].visib && !element.set[1].visib)
+    ) {
+      let twos = [];
+
+      amount = 0;
+      count = 0;
+
+      if (element.set[0].visib) {
+        twos.push(element.set[0].value);
+      }
+      if (element.set[1].visib) {
+        twos.push(element.set[1].value);
+      }
+      if (element.set[2].visib) {
+        twos.push(element.set[2].value);
+      }
+
+      //console.log("twos: " + twos);
+      console.log("Current element: " + element.name);
+      console.log(
+        chalk.magentaBright("Almost full set detected! " + element.name)
+      );
+      leftovers.forEach(function (left) {
+        console.log(
+          "Possible crossum: " +
+            (crossSum(twos) + left) +
+            " with the prize: " +
+            prizes[prizeSelect(prizes, crossSum(twos) + left)].prize
+        );
+        count++;
+        amount =
+          amount + prizes[prizeSelect(prizes, crossSum(twos) + left)].prize;
+      });
+      console.log("Amount of options: " + count);
+      console.log("Total prize amounts: " + amount);
+      console.log(
+        chalk.green("Average value of choosing this option: " + amount / count)
+      );
+      options.push({ option: element.name, value: amount / count });
+    } else if (
+      !element.set[0].visib &&
+      !element.set[1].visib &&
+      !element.set[2].visib
+    ) {
+      if (
+        leftovers.includes(1) &&
+        leftovers.includes(2) &&
+        leftovers.includes(3)
+      ) {
+        options.push({ option: element.name, value: 1000 });
+      } else if (
+        leftovers.includes(7) &&
+        leftovers.includes(8) &&
+        leftovers.includes(9)
+      ) {
+        options.push({ option: element.name, value: 360 });
+      } else if (
+        leftovers.includes(6) &&
+        leftovers.includes(8) &&
+        leftovers.includes(9)
+      ) {
+        options.push({ option: element.name, value: 180 });
+      }
+    } else if (
+      element.set[0].visib &&
+      !element.set[1].visib &&
+      !element.set[2].visib
+    ) {
+      let threes = [1, 2, 3];
+      if (threes.includes(element.set[0].value)) {
+        console.log(chalk.red("///////"));
+        console.log("Current element ONLY ONE: " + element.name);
+        console.log(chalk.red("///////"));
+        //threes.pop(element.set[0].value);
+        let index = threes.indexOf(element.set[0].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        if (
+          threes.includes(element.set[1].value) &&
+          threes.includes(element.set[2].value)
+        ) {
+          options.push({ option: element.name, value: 1001 });
+        }
+      }
+    } else if (
+      !element.set[0].visib &&
+      element.set[1].visib &&
+      !element.set[2].visib
+    ) {
+      let threes = [1, 2, 3];
+      if (threes.includes(element.set[1].value)) {
+        console.log(chalk.red("///////"));
+        console.log("Current element ONLY ONE: " + element.name);
+        console.log(chalk.red("///////"));
+        //threes.pop(element.set[1].value);
+        let index = threes.indexOf(element.set[1].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        if (
+          threes.includes(element.set[0].value) &&
+          threes.includes(element.set[2].value)
+        ) {
+          options.push({ option: element.name, value: 1001 });
+        }
+      }
+    } else if (
+      !element.set[0].visib &&
+      !element.set[1].visib &&
+      element.set[2].visib
+    ) {
+      let threes = [1, 2, 3];
+      if (threes.includes(element.set[2].value)) {
+        console.log(chalk.red("///////"));
+        console.log("Current element ONLY ONE: " + element.name);
+        console.log(element);
+        console.log(chalk.red("///////"));
+        //threes.pop(element.set[2].value);
+        let index = threes.indexOf(element.set[2].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        if (leftovers.includes(threes[0] && leftovers.includes(threes[1]))) {
+          if (
+            threes.includes(element.set[0].value) &&
+            threes.includes(element.set[1].value)
+          ) {
+            options.push({ option: element.name, value: 1001 });
+          }
+        }
+      }
+    }
+  });
+  console.log("all options:");
+  console.log(options);
+
+  options.forEach(function (opt) {
+    if (opt.value > best.value) {
+      best.option = opt.option;
+      best.value = opt.value;
+    }
+  });
+  console.log(
+    chalk.yellow(
+      "The best option is: " +
+        best.option +
+        " - with an average prize of: " +
+        best.value
+    )
+  );
+}
+
 // Function that starts the game.
-function gameStart(nineArray, args, prizes) {
-  revealing2(nineArray, args);
+function gameStart(nineArray, visibles, prizes, fullNines) {
+  //revealing2(nineArray, visibles);
+  revealing2(nineArray, visibles, prizes, fullNines);
+  //
+  //solverPrimitive(nineArray, visibles, prizes, fullNines);
+  //
   setSelect2(nineArray, prizes);
 }
 
@@ -273,7 +557,8 @@ setsFull.forEach(function (set) {
 console.log(chalk.green(" //// Start of the game ////"));
 
 console.log(chalk.blue("Three by three with hidden:"));
+
 threebythreeNines(shuffledNines, visibles);
-gameStart(shuffledNines, visibles, prizes);
+gameStart(shuffledNines, visibles, prizes, ninesFull);
 
 console.log(chalk.green(" //// End of the game ////"));
