@@ -213,19 +213,6 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
     { name: "diagonal right", set: diagonalRight },
   ];
 
-  /*const sets = [
-    row1,
-    row2,
-    row3,
-    column1,
-    column2,
-    column3,
-    diagonalLeft,
-    diagonalRight,
-  ];*/
-
-  //console.log("sets0 0 : " + sets[0][0].value);
-
   sets.forEach(function (element) {
     if (element.set[0].visib && element.set[1].visib && element.set[2].visib) {
       //console.log("Current element: " + element.name);
@@ -322,13 +309,13 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         leftovers.includes(2) &&
         leftovers.includes(3)
       ) {
-        options.push({ option: element.name, value: 1000 });
+        options.push({ option: element.name, value: 999 });
       } else if (
         leftovers.includes(7) &&
         leftovers.includes(8) &&
         leftovers.includes(9)
       ) {
-        options.push({ option: element.name, value: 360 });
+        options.push({ option: element.name, value: 359 });
       } else if (
         leftovers.includes(6) &&
         leftovers.includes(8) &&
@@ -341,21 +328,46 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       !element.set[1].visib &&
       !element.set[2].visib
     ) {
-      let threes = [1, 2, 3];
-      if (threes.includes(element.set[0].value)) {
-        console.log(chalk.red("///////"));
-        console.log("Current element ONLY ONE: " + element.name);
-        console.log(chalk.red("///////"));
-        //threes.pop(element.set[0].value);
+      //let threes = [1, 2, 3];
+      if ([1, 2, 3].includes(element.set[0].value)) {
+        let threes = [1, 2, 3];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
         let index = threes.indexOf(element.set[0].value);
         if (index > -1) {
           threes.splice(index, 1);
         }
+        //console.log("///threes right now///: " + threes);
+        //console.log(element.set);
         if (
-          threes.includes(element.set[1].value) &&
-          threes.includes(element.set[2].value)
+          //threes.includes(element.set[1].value) &&
+          //threes.includes(element.set[2].value)
+          leftovers.includes(threes[0]) &&
+          leftovers.includes(threes[1])
         ) {
+          //console.log("//pushing//");
           options.push({ option: element.name, value: 1001 });
+        }
+      } else if ([7, 8, 9].includes(element.set[0].value)) {
+        let threes = [7, 8, 9];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
+        let index = threes.indexOf(element.set[0].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        //console.log("///threes right now///: " + threes);
+        //console.log(element.set);
+        if (
+          //threes.includes(element.set[1].value) &&
+          //threes.includes(element.set[2].value)
+          leftovers.includes(threes[0]) &&
+          leftovers.includes(threes[1])
+        ) {
+          //console.log("//pushing//");
+          options.push({ option: element.name, value: 361 });
         }
       }
     } else if (
@@ -363,21 +375,36 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       element.set[1].visib &&
       !element.set[2].visib
     ) {
-      let threes = [1, 2, 3];
-      if (threes.includes(element.set[1].value)) {
-        console.log(chalk.red("///////"));
-        console.log("Current element ONLY ONE: " + element.name);
-        console.log(chalk.red("///////"));
-        //threes.pop(element.set[1].value);
+      //let threes = [1, 2, 3];
+      if ([1, 2, 3].includes(element.set[1].value)) {
+        let threes = [1, 2, 3];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
+
         let index = threes.indexOf(element.set[1].value);
         if (index > -1) {
           threes.splice(index, 1);
         }
-        if (
-          threes.includes(element.set[0].value) &&
-          threes.includes(element.set[2].value)
-        ) {
+        //console.log("///threes right now///: " + threes);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          //console.log("//pushing//");
           options.push({ option: element.name, value: 1001 });
+        }
+      } else if ([7, 8, 9].includes(element.set[1].value)) {
+        let threes = [7, 8, 9];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
+
+        let index = threes.indexOf(element.set[1].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        //console.log("///threes right now///: " + threes);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          //console.log("//pushing//");
+          options.push({ option: element.name, value: 361 });
         }
       }
     } else if (
@@ -385,24 +412,34 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       !element.set[1].visib &&
       element.set[2].visib
     ) {
-      let threes = [1, 2, 3];
-      if (threes.includes(element.set[2].value)) {
-        console.log(chalk.red("///////"));
-        console.log("Current element ONLY ONE: " + element.name);
-        console.log(element);
-        console.log(chalk.red("///////"));
-        //threes.pop(element.set[2].value);
+      //let threes = [1, 2, 3];
+      if ([1, 2, 3].includes(element.set[2].value)) {
+        let threes = [1, 2, 3];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(element);
+        //console.log(chalk.red("///////"));
         let index = threes.indexOf(element.set[2].value);
         if (index > -1) {
           threes.splice(index, 1);
         }
-        if (leftovers.includes(threes[0] && leftovers.includes(threes[1]))) {
-          if (
-            threes.includes(element.set[0].value) &&
-            threes.includes(element.set[1].value)
-          ) {
-            options.push({ option: element.name, value: 1001 });
-          }
+        //console.log("///threes right now///: " + threes);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          options.push({ option: element.name, value: 1001 });
+        }
+      } else if ([7, 8, 9].includes(element.set[2].value)) {
+        let threes = [7, 8, 9];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(element);
+        ///console.log(chalk.red("///////"));
+        let index = threes.indexOf(element.set[2].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        //console.log("///threes right now///: " + threes);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          options.push({ option: element.name, value: 361 });
         }
       }
     }
@@ -559,6 +596,7 @@ console.log(chalk.green(" //// Start of the game ////"));
 console.log(chalk.blue("Three by three with hidden:"));
 
 threebythreeNines(shuffledNines, visibles);
+solverPrimitive(shuffledNines, visibles, prizes, ninesFull);
 gameStart(shuffledNines, visibles, prizes, ninesFull);
 
 console.log(chalk.green(" //// End of the game ////"));
