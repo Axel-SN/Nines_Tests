@@ -165,6 +165,146 @@ function unrevealed(nineArray, visibles) {
   //console.log("leftovers: " + leftovers);
 }
 
+// function to get the slots of a given set
+function slotsFromName(name) {
+  switch (name) {
+    case "row1":
+      return [1, 2, 3];
+      break;
+    case "row2":
+      return [4, 5, 6];
+      break;
+    case "row3":
+      return [7, 8, 9];
+      break;
+    case "column1":
+      return [1, 4, 7];
+      break;
+    case "column2":
+      return [2, 5, 8];
+      break;
+    case "column3":
+      return [3, 6, 9];
+      break;
+    case "diagonal left":
+      return [1, 5, 9];
+      break;
+    case "diagonal right":
+      return [3, 5, 7];
+      break;
+    default:
+      console.log(chalk.red("I think something broke"));
+      return [123, 123, 123];
+  }
+}
+
+// function to tally value amounts for given slots
+function slotValue(optionsArray) {
+  let data = [
+    { number: 1, value: 0 },
+    { number: 2, value: 0 },
+    { number: 3, value: 0 },
+    { number: 4, value: 0 },
+    { number: 5, value: 0 },
+    { number: 6, value: 0 },
+    { number: 7, value: 0 },
+    { number: 8, value: 0 },
+    { number: 9, value: 0 },
+  ];
+
+  optionsArray.forEach(function (set) {
+    set.slots.forEach(function (slot) {
+      switch (slot) {
+        case 1:
+          data[0].value += set.value;
+          break;
+        case 2:
+          data[1].value += set.value;
+          break;
+        case 3:
+          data[2].value += set.value;
+          break;
+        case 4:
+          data[3].value += set.value;
+          break;
+        case 5:
+          data[4].value += set.value;
+          break;
+        case 6:
+          data[5].value += set.value;
+          break;
+        case 7:
+          data[6].value += set.value;
+          break;
+        case 8:
+          data[7].value += set.value;
+          break;
+        case 9:
+          data[8].value += set.value;
+          break;
+        default:
+          console.log(chalk.red("I think we shouldnt be here..."));
+          break;
+      }
+    });
+  });
+
+  //console.log("// slotvalues//");
+  //console.log(data);
+
+  //console.log("// slotvalues SORTED//");
+  //console.log(data.sort((a, b) => b.value - a.value));
+
+  //return data.sort((a, b) => b.value - a.value);
+
+  return data;
+}
+
+/*
+function removeVisibles(options, visiblez) {
+  let visiblezz = visiblez;
+  let index = -2;
+  for (let i = 0; i < visiblezz.length; i++) {
+    visiblezz[i] = visiblezz[i] + 1;
+  }
+
+  visiblezz.forEach(function (v) {
+    index = -2;
+    index = options.findIndex((x) => x.number == v);
+    if (index > -1) {
+      options.splice(index, 1);
+    }
+  });
+
+  return options;
+}
+*/
+
+// function to trim an options array by the visible numbers
+// does not work as intended, needs to filter based on SLOT POSITION - NOT NUMBER !!!!!
+function trimOptions(opts, fulln, visibs) {
+  let toTrim = [];
+  let trimmedOpts = opts;
+  let index = -99;
+  for (let i = 0; i < visibs.length; i++) {
+    toTrim.push(fulln[visibs[i]]);
+  }
+
+  console.log("// numbers to trim: " + toTrim);
+
+  toTrim.forEach(function (trimmer) {
+    index = trimmedOpts.findIndex((x) => x.number == trimmer);
+    if (index > -1) {
+      trimmedOpts.splice(index, 1);
+    }
+  });
+
+  //console.log(chalk.red("errr lets see?"));
+  //console.log(trimmedOpts);
+
+  return trimmedOpts;
+}
+
 // primitive solving function tests
 // try to ascertain results for a fully revealed set
 // try to ascertain possible results for sets only missing one numbers
@@ -203,14 +343,14 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
   const diagonalRight = [ninesFull[2], ninesFull[4], ninesFull[6]];
 
   const sets = [
-    { name: "row1", set: row1 },
-    { name: "row2", set: row2 },
-    { name: "row3", set: row3 },
-    { name: "column1", set: column1 },
-    { name: "column2", set: column2 },
-    { name: "column3", set: column3 },
-    { name: "diagonal left", set: diagonalLeft },
-    { name: "diagonal right", set: diagonalRight },
+    { name: "row1", set: row1, slots: [1, 2, 3] },
+    { name: "row2", set: row2, slots: [4, 5, 6] },
+    { name: "row3", set: row3, slots: [7, 8, 9] },
+    { name: "column1", set: column1, slots: [1, 4, 7] },
+    { name: "column2", set: column2, slots: [2, 5, 8] },
+    { name: "column3", set: column3, slots: [3, 6, 9] },
+    { name: "diagonal left", set: diagonalLeft, slots: [1, 5, 9] },
+    { name: "diagonal right", set: diagonalRight, slots: [3, 5, 7] },
   ];
 
   sets.forEach(function (element) {
@@ -256,6 +396,7 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
               ])
             )
           ].prize,
+        slots: slotsFromName(element.name),
       });
     } else if (
       (element.set[0].visib && element.set[1].visib && !element.set[2].visib) ||
@@ -298,7 +439,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       console.log(
         chalk.green("Average value of choosing this option: " + amount / count)
       );
-      options.push({ option: element.name, value: amount / count });
+      options.push({
+        option: element.name,
+        value: amount / count,
+        slots: slotsFromName(element.name),
+      });
     } else if (
       !element.set[0].visib &&
       !element.set[1].visib &&
@@ -309,19 +454,31 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         leftovers.includes(2) &&
         leftovers.includes(3)
       ) {
-        options.push({ option: element.name, value: 999 });
+        options.push({
+          option: element.name,
+          value: 1001,
+          slots: slotsFromName(element.name),
+        });
       } else if (
         leftovers.includes(7) &&
         leftovers.includes(8) &&
         leftovers.includes(9)
       ) {
-        options.push({ option: element.name, value: 359 });
+        options.push({
+          option: element.name,
+          value: 361,
+          slots: slotsFromName(element.name),
+        });
       } else if (
         leftovers.includes(6) &&
         leftovers.includes(8) &&
         leftovers.includes(9)
       ) {
-        options.push({ option: element.name, value: 180 });
+        options.push({
+          option: element.name,
+          value: 180,
+          slots: slotsFromName(element.name),
+        });
       }
     } else if (
       element.set[0].visib &&
@@ -347,7 +504,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
           leftovers.includes(threes[1])
         ) {
           //console.log("//pushing//");
-          options.push({ option: element.name, value: 1001 });
+          options.push({
+            option: element.name,
+            value: 1002,
+            slots: slotsFromName(element.name),
+          });
         }
       } else if ([7, 8, 9].includes(element.set[0].value)) {
         let threes = [7, 8, 9];
@@ -367,7 +528,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
           leftovers.includes(threes[1])
         ) {
           //console.log("//pushing//");
-          options.push({ option: element.name, value: 361 });
+          options.push({
+            option: element.name,
+            value: 362,
+            slots: slotsFromName(element.name),
+          });
         }
       }
     } else if (
@@ -389,7 +554,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         //console.log("///threes right now///: " + threes);
         if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
           //console.log("//pushing//");
-          options.push({ option: element.name, value: 1001 });
+          options.push({
+            option: element.name,
+            value: 1002,
+            slots: slotsFromName(element.name),
+          });
         }
       } else if ([7, 8, 9].includes(element.set[1].value)) {
         let threes = [7, 8, 9];
@@ -404,7 +573,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         //console.log("///threes right now///: " + threes);
         if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
           //console.log("//pushing//");
-          options.push({ option: element.name, value: 361 });
+          options.push({
+            option: element.name,
+            value: 362,
+            slots: slotsFromName(element.name),
+          });
         }
       }
     } else if (
@@ -425,7 +598,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         }
         //console.log("///threes right now///: " + threes);
         if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
-          options.push({ option: element.name, value: 1001 });
+          options.push({
+            option: element.name,
+            value: 1002,
+            slots: slotsFromName(element.name),
+          });
         }
       } else if ([7, 8, 9].includes(element.set[2].value)) {
         let threes = [7, 8, 9];
@@ -439,13 +616,46 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         }
         //console.log("///threes right now///: " + threes);
         if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
-          options.push({ option: element.name, value: 361 });
+          options.push({
+            option: element.name,
+            value: 362,
+            slots: slotsFromName(element.name),
+          });
         }
       }
     }
   });
   console.log("all options:");
   console.log(options);
+
+  let slotvalues = slotValue(options);
+
+  console.log("//slotvalues//");
+  console.log(slotvalues);
+
+  /*
+  slotvalues.forEach(function (sv) {
+    visibles.forEach(function (vis) {
+      if (sv.number == vis + 1) {
+        let index = slotvalues.indexOf(vis + 1);
+        slotvalues.splice(index, 1);
+      }
+    });
+  });
+  */
+
+  //slotvalues = removeVisibles(slotvalues, visibles);
+
+  let trimmedSlots = trimOptions(slotvalues, nineArray, visibles);
+
+  console.log("//visibless //");
+  console.log(visibles);
+  console.log("//slotvalues CUT//");
+  console.log(trimmedSlots);
+
+  console.log("/// Slotvalues SORTED ///");
+  let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
+  console.log(slotvaluesSorted);
 
   options.forEach(function (opt) {
     if (opt.value > best.value) {
@@ -537,14 +747,14 @@ const diagonalLeft = [shuffledNines[0], shuffledNines[4], shuffledNines[8]];
 const diagonalRight = [shuffledNines[2], shuffledNines[4], shuffledNines[6]];
 const diagonals = [diagonalLeft, diagonalRight];
 const setsFull = [
-  { name: "row1", set: row1 },
-  { name: "row2", set: row2 },
-  { name: "row3", set: row3 },
-  { name: "column1", set: column1 },
-  { name: "column2", set: column2 },
-  { name: "column3", set: column3 },
-  { name: "diagonal left", set: diagonalLeft },
-  { name: "diagonal right", set: diagonalRight },
+  { name: "row1", set: row1, slots: [1, 2, 3] },
+  { name: "row2", set: row2, slots: [4, 5, 6] },
+  { name: "row3", set: row3, slots: [7, 8, 9] },
+  { name: "column1", set: column1, slots: [1, 4, 7] },
+  { name: "column2", set: column2, slots: [2, 5, 8] },
+  { name: "column3", set: column3, slots: [3, 6, 9] },
+  { name: "diagonal left", set: diagonalLeft, slots: [1, 5, 9] },
+  { name: "diagonal right", set: diagonalRight, slots: [3, 5, 7] },
 ];
 
 // Control outputs //
