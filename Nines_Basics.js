@@ -290,10 +290,10 @@ function trimOptions(opts, fulln, visibs) {
     toTrim.push(fulln[visibs[i]]);
   }
 
-  console.log("// numbers to trim: " + toTrim);
+  //console.log("// numbers to trim: " + toTrim);
 
-  toTrim.forEach(function (trimmer) {
-    index = trimmedOpts.findIndex((x) => x.number == trimmer);
+  visibs.forEach(function (trimmer) {
+    index = trimmedOpts.findIndex((x) => x.number == trimmer + 1);
     if (index > -1) {
       trimmedOpts.splice(index, 1);
     }
@@ -630,8 +630,9 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
 
   let slotvalues = slotValue(options);
 
-  console.log("//slotvalues//");
-  console.log(slotvalues);
+  // control information for slotvalues
+  //console.log("//slotvalues//");
+  //console.log(slotvalues);
 
   /*
   slotvalues.forEach(function (sv) {
@@ -648,14 +649,20 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
 
   let trimmedSlots = trimOptions(slotvalues, nineArray, visibles);
 
+  /*
   console.log("//visibless //");
   console.log(visibles);
   console.log("//slotvalues CUT//");
   console.log(trimmedSlots);
-
   console.log("/// Slotvalues SORTED ///");
-  let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
-  console.log(slotvaluesSorted);
+*/
+  if (visibles.length < 4) {
+    console.log(
+      chalk.blue("Unrevealed slot values sorted by value descending")
+    );
+    let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
+    console.log(slotvaluesSorted);
+  }
 
   options.forEach(function (opt) {
     if (opt.value > best.value) {
@@ -718,6 +725,8 @@ const prizes = [
 // create a basic array of nine numbers, then create a shuffled array for each instance of a nines game
 const ninesClean = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const nines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// change const to let for testing
 const shuffledNines = shuffleArray(nines);
 const ninesFull = [
   { value: shuffledNines[0], visib: false },
@@ -808,5 +817,24 @@ console.log(chalk.blue("Three by three with hidden:"));
 threebythreeNines(shuffledNines, visibles);
 solverPrimitive(shuffledNines, visibles, prizes, ninesFull);
 gameStart(shuffledNines, visibles, prizes, ninesFull);
+
+/*
+// For self start with test values //
+shuffledNines = [4, 9, 1, 6, 2, 8, 5, 7, 3];
+ninesFull = [
+  { value: shuffledNines[0], visib: false },
+  { value: shuffledNines[1], visib: false },
+  { value: shuffledNines[2], visib: false },
+  { value: shuffledNines[3], visib: false },
+  { value: shuffledNines[4], visib: false },
+  { value: shuffledNines[5], visib: false },
+  { value: shuffledNines[6], visib: false },
+  { value: shuffledNines[7], visib: false },
+  { value: shuffledNines[8], visib: false },
+];
+threebythreeNines(shuffledNines, [4]);
+solverPrimitive(shuffledNines, [4], prizes, ninesFull);
+gameStart(shuffledNines, [4], prizes, ninesFull);
+*/
 
 console.log(chalk.green(" //// End of the game ////"));
