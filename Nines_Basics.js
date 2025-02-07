@@ -63,8 +63,15 @@ function prizeSelect(prizes, value) {
 function revealing2(nineArray, visibles, prizes, fullNines) {
   let input;
   for (let i = 0; i < 3; i++) {
+    // with user input
+    /*
     input = prompt(chalk.blue("Which one do you want to reveal? "));
     input = parseInt(input);
+    */
+
+    // with function
+    input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 2);
+
     //console.log("input: " + input);
     if (nineArray.includes(input) && !visibles.includes(input - 1)) {
       visibles.push(input - 1);
@@ -85,12 +92,13 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     // control output to check if the revealed slots are correct
     //console.log(visibles);
     threebythreeNines(nineArray, visibles);
-    solverPrimitive(nineArray, visibles, prizes, fullNines);
+    console.log("--- next step ---");
+    solverPrimitive(nineArray, visibles, prizes, fullNines, false, 0);
   }
 }
 
 // This function aims to have the player select which set to choose as their final answer. The player will be asked to input a valid set, otherwise they will contiuously get asked to input a valid one. The output message will be the selected set, its cross sum and the prize
-function setSelect2(nineArray, prizes) {
+function setSelect2(nineArray, prizes, visibles, fullNines) {
   let sumString = ". The cross sum is: ";
   let prizeString = ". Your prize is: ";
   let selectString = " was selected! Your numbers are: ";
@@ -117,11 +125,17 @@ function setSelect2(nineArray, prizes) {
   ];
 
   do {
+    // with user input
+    /*
     input = prompt(
       chalk.blue(
         "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
       )
     );
+    */
+
+    // using function input
+    input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 1);
 
     if (optionsFull.some((x) => x.name === input)) {
       inputFound = optionsFull.find((x) => x.name === input).set;
@@ -147,6 +161,7 @@ function setSelect2(nineArray, prizes) {
   } while (flag);
 }
 
+// Function to return all currently urevealed number slots of a given set of nine numbers
 function unrevealed(nineArray, visibles) {
   const nine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   let toCut = [];
@@ -260,26 +275,6 @@ function slotValue(optionsArray) {
   return data;
 }
 
-/*
-function removeVisibles(options, visiblez) {
-  let visiblezz = visiblez;
-  let index = -2;
-  for (let i = 0; i < visiblezz.length; i++) {
-    visiblezz[i] = visiblezz[i] + 1;
-  }
-
-  visiblezz.forEach(function (v) {
-    index = -2;
-    index = options.findIndex((x) => x.number == v);
-    if (index > -1) {
-      options.splice(index, 1);
-    }
-  });
-
-  return options;
-}
-*/
-
 // function to trim an options array by the visible numbers
 // does not work as intended, needs to filter based on SLOT POSITION - NOT NUMBER !!!!!
 function trimOptions(opts, fulln, visibs) {
@@ -309,7 +304,8 @@ function trimOptions(opts, fulln, visibs) {
 // try to ascertain results for a fully revealed set
 // try to ascertain possible results for sets only missing one numbers
 // try to ascertain possible results for sets missing two numbers
-function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
+// attempt to ascertain possible high roll results (123, 789) for completely unknown sets of three numbers
+function solverPrimitive(nineArray, visibles, prizes, ninesFull, log, flag) {
   let toCut = [];
 
   let amount = 0;
@@ -331,7 +327,9 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
 
   // control output
   //console.log(ninesFull);
-  console.log("leftovers: " + leftovers);
+  if (log) {
+    console.log("leftovers: " + leftovers);
+  }
 
   const row1 = [ninesFull[0], ninesFull[1], ninesFull[2]];
   const row2 = [ninesFull[3], ninesFull[4], ninesFull[5]];
@@ -355,34 +353,37 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
 
   sets.forEach(function (element) {
     if (element.set[0].visib && element.set[1].visib && element.set[2].visib) {
-      //console.log("Current element: " + element.name);
-      console.log(chalk.magentaBright("Full set detected! " + element.name));
+      if (log) {
+        //console.log("Current element: " + element.name);
+        console.log(chalk.magentaBright("Full set detected! " + element.name));
 
-      //console.log(element.set);
+        //console.log(element.set);
 
-      //console.log("aaa " + element.set[0].value);
+        //console.log("aaa " + element.set[0].value);
 
-      console.log(
-        chalk.green(
-          "If you choose this one: " +
-            crossSum([
-              element.set[0].value,
-              element.set[1].value,
-              element.set[2].value,
-            ]) +
-            ": " +
-            prizes[
-              prizeSelect(
-                prizes,
-                crossSum([
-                  element.set[0].value,
-                  element.set[1].value,
-                  element.set[2].value,
-                ])
-              )
-            ].prize
-        )
-      );
+        console.log(
+          chalk.green(
+            "Value if you choose this option: " +
+              crossSum([
+                element.set[0].value,
+                element.set[1].value,
+                element.set[2].value,
+              ]) +
+              ": " +
+              prizes[
+                prizeSelect(
+                  prizes,
+                  crossSum([
+                    element.set[0].value,
+                    element.set[1].value,
+                    element.set[2].value,
+                  ])
+                )
+              ].prize
+          )
+        );
+      }
+
       options.push({
         option: element.name,
         value:
@@ -418,27 +419,35 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         twos.push(element.set[2].value);
       }
 
-      //console.log("twos: " + twos);
-      console.log("Current element: " + element.name);
-      console.log(
-        chalk.magentaBright("Almost full set detected! " + element.name)
-      );
-      leftovers.forEach(function (left) {
+      if (log) {
+        //console.log("twos: " + twos);
+        //console.log("Current element: " + element.name);
         console.log(
-          "Possible crossum: " +
-            (crossSum(twos) + left) +
-            " with the prize: " +
-            prizes[prizeSelect(prizes, crossSum(twos) + left)].prize
+          chalk.magentaBright("Almost full set detected! " + element.name)
         );
+      }
+      leftovers.forEach(function (left) {
+        if (log) {
+          console.log(
+            "Possible crossum: " +
+              (crossSum(twos) + left) +
+              " with the prize: " +
+              prizes[prizeSelect(prizes, crossSum(twos) + left)].prize
+          );
+        }
         count++;
         amount =
           amount + prizes[prizeSelect(prizes, crossSum(twos) + left)].prize;
       });
-      console.log("Amount of options: " + count);
-      console.log("Total prize amounts: " + amount);
-      console.log(
-        chalk.green("Average value of choosing this option: " + amount / count)
-      );
+      if (log) {
+        console.log("Amount of options: " + count);
+        console.log("Total prize amounts: " + amount);
+        console.log(
+          chalk.green(
+            "Average value of choosing this option: " + amount / count
+          )
+        );
+      }
       options.push({
         option: element.name,
         value: amount / count,
@@ -485,7 +494,6 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       !element.set[1].visib &&
       !element.set[2].visib
     ) {
-      //let threes = [1, 2, 3];
       if ([1, 2, 3].includes(element.set[0].value)) {
         let threes = [1, 2, 3];
         //console.log(chalk.red("///////"));
@@ -497,12 +505,7 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         }
         //console.log("///threes right now///: " + threes);
         //console.log(element.set);
-        if (
-          //threes.includes(element.set[1].value) &&
-          //threes.includes(element.set[2].value)
-          leftovers.includes(threes[0]) &&
-          leftovers.includes(threes[1])
-        ) {
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
           //console.log("//pushing//");
           options.push({
             option: element.name,
@@ -521,12 +524,7 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
         }
         //console.log("///threes right now///: " + threes);
         //console.log(element.set);
-        if (
-          //threes.includes(element.set[1].value) &&
-          //threes.includes(element.set[2].value)
-          leftovers.includes(threes[0]) &&
-          leftovers.includes(threes[1])
-        ) {
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
           //console.log("//pushing//");
           options.push({
             option: element.name,
@@ -540,7 +538,6 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       element.set[1].visib &&
       !element.set[2].visib
     ) {
-      //let threes = [1, 2, 3];
       if ([1, 2, 3].includes(element.set[1].value)) {
         let threes = [1, 2, 3];
         //console.log(chalk.red("///////"));
@@ -585,7 +582,6 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       !element.set[1].visib &&
       element.set[2].visib
     ) {
-      //let threes = [1, 2, 3];
       if ([1, 2, 3].includes(element.set[2].value)) {
         let threes = [1, 2, 3];
         //console.log(chalk.red("///////"));
@@ -625,8 +621,11 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       }
     }
   });
-  console.log("all options:");
-  console.log(options);
+
+  if (log) {
+    console.log("all options:");
+    console.log(options);
+  }
 
   let slotvalues = slotValue(options);
 
@@ -650,18 +649,28 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
   let trimmedSlots = trimOptions(slotvalues, nineArray, visibles);
 
   /*
+  if (log) {
   console.log("//visibless //");
   console.log(visibles);
   console.log("//slotvalues CUT//");
   console.log(trimmedSlots);
   console.log("/// Slotvalues SORTED ///");
-*/
+    }
+  */
+
   if (visibles.length < 4) {
-    console.log(
-      chalk.blue("Unrevealed slot values sorted by value descending")
-    );
     let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
-    console.log(slotvaluesSorted);
+
+    if (flag == 2) {
+      return slotvaluesSorted[0].number;
+    }
+
+    if (log) {
+      console.log(
+        chalk.blue("Unrevealed slot values sorted by value descending")
+      );
+      console.log(slotvaluesSorted);
+    }
   }
 
   options.forEach(function (opt) {
@@ -670,24 +679,30 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull) {
       best.value = opt.value;
     }
   });
-  console.log(
-    chalk.yellow(
-      "The best option is: " +
-        best.option +
-        " - with an average prize of: " +
-        best.value
-    )
-  );
+
+  if (flag == 1) {
+    return best.option;
+  }
+
+  if (visibles.length == 4) {
+    if (log) {
+      console.log(
+        chalk.yellow(
+          "The best option is: " +
+            best.option +
+            " - with an average prize of: " +
+            best.value
+        )
+      );
+    }
+  }
 }
 
 // Function that starts the game.
 function gameStart(nineArray, visibles, prizes, fullNines) {
-  //revealing2(nineArray, visibles);
   revealing2(nineArray, visibles, prizes, fullNines);
-  //
-  //solverPrimitive(nineArray, visibles, prizes, fullNines);
-  //
-  setSelect2(nineArray, prizes);
+  //solverPrimitive(nineArray, visibles, prizes, fullNines, true, 0);
+  setSelect2(nineArray, prizes, visibles, fullNines);
 }
 
 // Actual start of things //
@@ -768,55 +783,85 @@ const setsFull = [
 
 // Control outputs //
 
-console.log(chalk.green(" //// CONTROL OUTPUTS ////"));
+//let promptInput = prompt(
+//  chalk.red("Do you want to see all information? (yes=show, other=skip) ")
+//);
 
-// output the base array and the shuffled array
-console.log("Base Array: " + ninesClean);
-console.log("Shuffled Array: " + shuffledNines);
-//console.log(ninesFull);
-console.log("startvalue: " + startValue);
-console.log(visibles);
+let promptInput = "yes";
 
-// output the array in a three be three row/column format for better visualization
-console.log("Three by three:");
-threebythree(shuffledNines);
-//console.log("Three by three with hidden:");
-//threebythreeNines(shuffledNines, visibles);
-//threebythreeNines(shuffledNines, [1, 3, 5, 6, 7, 8]);
+let boardValue = 0;
 
-// calculate and output the cross sum of each row, column and diagonal
-console.log("Cross sum of row1: " + crossSum(row1));
-console.log("Cross sum of row2: " + crossSum(row2));
-console.log("Cross sum of row3: " + crossSum(row3));
-console.log("Cross sum of column1: " + crossSum(column1));
-console.log("Cross sum of column2: " + crossSum(column2));
-console.log("Cross sum of column3: " + crossSum(column3));
-console.log(
-  "Cross sum of diagonal Upper left to lower right: " + crossSum(diagonalLeft)
-);
-console.log(
-  "Cross sum of diagonal Upper right to lower left: " + crossSum(diagonalRight)
-);
+if (promptInput === "yes") {
+  console.log(chalk.green(" //// CONTROL OUTPUTS ////"));
 
+  // output the base array and the shuffled array
+  console.log("Base Array: " + ninesClean);
+  console.log("Shuffled Array: " + shuffledNines);
+  //console.log(ninesFull);
+  console.log("startvalue: " + startValue);
+  console.log(visibles);
+
+  // output the array in a three be three row/column format for better visualization
+  console.log("Three by three:");
+  threebythree(shuffledNines);
+  //console.log("Three by three with hidden:");
+  //threebythreeNines(shuffledNines, visibles);
+  //threebythreeNines(shuffledNines, [1, 3, 5, 6, 7, 8]);
+
+  // calculate and output the cross sum of each row, column and diagonal
+  console.log("Cross sum of row1: " + crossSum(row1));
+  console.log("Cross sum of row2: " + crossSum(row2));
+  console.log("Cross sum of row3: " + crossSum(row3));
+  console.log("Cross sum of column1: " + crossSum(column1));
+  console.log("Cross sum of column2: " + crossSum(column2));
+  console.log("Cross sum of column3: " + crossSum(column3));
+  console.log(
+    "Cross sum of diagonal Upper left to lower right: " + crossSum(diagonalLeft)
+  );
+  console.log(
+    "Cross sum of diagonal Upper right to lower left: " +
+      crossSum(diagonalRight)
+  );
+}
 // Show the prize of each cross sum for the given set of nines
 setsFull.forEach(function (set) {
-  console.log(
-    pv +
-      set.name +
-      " = " +
-      crossSum(set.set) +
-      ": " +
-      prizes[prizeSelect(prizes, crossSum(set.set))].prize
-  );
+  if (promptInput === "yes") {
+    console.log(
+      pv +
+        set.name +
+        " = " +
+        crossSum(set.set) +
+        ": " +
+        prizes[prizeSelect(prizes, crossSum(set.set))].prize
+    );
+  }
+  boardValue =
+    boardValue + prizes[prizeSelect(prizes, crossSum(set.set))].prize;
 });
 
+// calculate the average prize value the user should be expecting on this given boards configuration (not accounting for the starting position)
+console.log(
+  chalk.blueBright(
+    "Average achievable prize value on this board configuration: " +
+      boardValue / 8
+  )
+);
+
+// Game start
 console.log(chalk.green(" //// Start of the game ////"));
 
 console.log(chalk.blue("Three by three with hidden:"));
 
 threebythreeNines(shuffledNines, visibles);
-solverPrimitive(shuffledNines, visibles, prizes, ninesFull);
+console.log("--- start ---");
+solverPrimitive(shuffledNines, visibles, prizes, ninesFull, false, 0);
 gameStart(shuffledNines, visibles, prizes, ninesFull);
+console.log(
+  chalk.blueBright(
+    "Average achievable prize value on this board configuration: " +
+      boardValue / 8
+  )
+);
 
 /*
 // For self start with test values //
@@ -833,7 +878,7 @@ ninesFull = [
   { value: shuffledNines[8], visib: false },
 ];
 threebythreeNines(shuffledNines, [4]);
-solverPrimitive(shuffledNines, [4], prizes, ninesFull);
+solverPrimitive(shuffledNines, [4], prizes, ninesFull, true, 0);
 gameStart(shuffledNines, [4], prizes, ninesFull);
 */
 
