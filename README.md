@@ -10,4 +10,4 @@ Update: 07-02
 - The game is now fully playable with user input. 
 
 - A primitive value assignment is given to possible slot-reveal options as well as the final set to lock in.
-- - The code is now capable to play the game itself, always picking the best reveal and set option based on the primitive value assignments.
+- The code is now capable of playing the game on its own, always picking the best reveal and set option based on the primitive value assignments.
