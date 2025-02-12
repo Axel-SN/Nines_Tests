@@ -848,6 +848,13 @@ console.log(
 );
 
 // Game start
+
+// to do
+// create differentiation case for self play or user input play
+// add more comments to explain functions and why thinks work the way they do, possibly refactor or change things
+
+// use actual algorithm theory for value assignments, have all possible options as values
+
 console.log(chalk.green(" //// Start of the game ////"));
 
 console.log(chalk.blue("Three by three with hidden:"));
