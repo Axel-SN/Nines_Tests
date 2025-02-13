@@ -12,6 +12,9 @@ function shuffleArray(array) {
 }
 
 // A funtion to output an array containing nine elements in a three by three format to showcase rows and columns better
+// !!! //
+// console.table => nachschauen
+// !!! //
 function threebythree(array) {
   for (let i = 0; i < 8; i = i + 3) {
     console.log(
@@ -22,6 +25,7 @@ function threebythree(array) {
         chalk.magentaBright(array[i + 2])
     );
   }
+  console.table(array); // LOOK UP !!
 }
 
 // This function aims to display a set of nine numbers, but only for numbers present in the args array, anything else will be marked with an X
@@ -64,10 +68,9 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
   let input;
   for (let i = 0; i < 3; i++) {
     // with user input
-    /*
-    input = prompt(chalk.blue("Which one do you want to reveal? "));
-    input = parseInt(input);
-    */
+
+    //input = prompt(chalk.blue("Which one do you want to reveal? "));
+    //input = parseInt(input);
 
     // with function
     input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 2);
@@ -131,8 +134,7 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
       chalk.blue(
         "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
       )
-    );
-    */
+    );*/
 
     // using function input
     input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 1);
