@@ -305,6 +305,9 @@ function trimOptions(opts, fulln, visibs) {
 // try to ascertain possible results for sets only missing one numbers
 // try to ascertain possible results for sets missing two numbers
 // attempt to ascertain possible high roll results (123, 789) for completely unknown sets of three numbers
+// the log argument can either be true or false, and will print out all the information of the possible sets and slot choices and values
+// the flag argument can be used to exit the function by returning either the most valuable set choice or the most valuable slot choice
+// flag == 1 -> best set option, flag == 2 -> best slot option
 function solverPrimitive(nineArray, visibles, prizes, ninesFull, log, flag) {
   let toCut = [];
 
@@ -705,7 +708,11 @@ function gameStart(nineArray, visibles, prizes, fullNines) {
   setSelect2(nineArray, prizes, visibles, fullNines);
 }
 
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 // Actual start of things //
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
 // variables
 const pv = "Prize if you chose ";
@@ -713,6 +720,8 @@ const startValue = Math.floor(Math.random() * 9);
 // initialize the usage of the prompt function to allow for user input
 //const prompt = require("prompt-sync")();
 const prompt = promptSync();
+// variable to enable or disable log printing during the game
+let log = false;
 
 // an array to showcase the prizes available for each cross sum
 const prizes = [
@@ -861,7 +870,7 @@ console.log(chalk.blue("Three by three with hidden:"));
 
 threebythreeNines(shuffledNines, visibles);
 console.log("--- start ---");
-solverPrimitive(shuffledNines, visibles, prizes, ninesFull, false, 0);
+solverPrimitive(shuffledNines, visibles, prizes, ninesFull, log, 0);
 gameStart(shuffledNines, visibles, prizes, ninesFull);
 console.log(
   chalk.blueBright(
