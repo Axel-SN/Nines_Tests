@@ -12,9 +12,6 @@ function shuffleArray(array) {
 }
 
 // A funtion to output an array containing nine elements in a three by three format to showcase rows and columns better
-// !!! //
-// console.table => nachschauen
-// !!! //
 function threebythree(array) {
   for (let i = 0; i < 8; i = i + 3) {
     console.log(
@@ -25,7 +22,6 @@ function threebythree(array) {
         chalk.magentaBright(array[i + 2])
     );
   }
-  console.table(array); // LOOK UP !!
 }
 
 // This function aims to display a set of nine numbers, but only for numbers present in the args array, anything else will be marked with an X
@@ -34,13 +30,43 @@ function threebythreeNines(nineArray, args) {
 
   for (let i = 0; i < nineArray.length; i++) {
     if (args.includes(i)) {
-      tempArray.push(nineArray[i]);
+      tempArray.push(chalk.green(nineArray[i]));
     } else {
       tempArray.push("X");
     }
   }
 
   threebythree(tempArray);
+}
+
+// function to log out the fully revealed array, colouring the selected final set to mark it
+function threebythreeFinal(nineArray, visibles, input) {
+  let colourSlots = slotsFromName(input);
+  let log1 = "";
+  let log2 = "";
+  let log3 = "";
+
+  for (let i = 0; i < 8; i = i + 3) {
+    if (colourSlots.includes(i + 1)) {
+      log1 = chalk.yellowBright(nineArray[i]);
+    } else {
+      log1 = chalk.magentaBright(nineArray[i]);
+    }
+
+    if (colourSlots.includes(i + 2)) {
+      log2 = chalk.yellowBright(nineArray[i + 1]);
+    } else {
+      log2 = chalk.magentaBright(nineArray[i + 1]);
+    }
+
+    if (colourSlots.includes(i + 3)) {
+      log3 = chalk.yellowBright(nineArray[i + 2]);
+    } else {
+      log3 = chalk.magentaBright(nineArray[i + 2]);
+    }
+
+    console.log(log1 + " - " + log2 + " - " + log3);
+  }
 }
 
 // A function that calculates the cross sum of a given set of numbers as an array
@@ -54,6 +80,10 @@ function crossSum(array) {
 
 // A function that uses a passed value of a cross sum and returns the given element index of the prizes array to be used
 function prizeSelect(prizes, value) {
+  // alternative
+  //if (prizes.some((x) => x.sum === value)) {
+  //}
+
   for (let b = 0; b < prizes.length; b++) {
     if (prizes[b].sum == value) {
       return b;
@@ -65,20 +95,28 @@ function prizeSelect(prizes, value) {
 // A function that is supposed to simulate the player choosing three spots to reveal, the only accepted inputs should be unrevealed numbers, to not have to deal with edge cases and faulty inputs.
 // Refactored version of the revealing function.
 function revealing2(nineArray, visibles, prizes, fullNines) {
+  // variable to toggle log showcases
+  let log = false;
+  // variable to toggle whether to automatically solve or allow the user to choose
+  let userControl = false;
   let input;
+
+  console.log("--- first reveal ---");
   for (let i = 0; i < 3; i++) {
-    // with user input
-
-    //input = prompt(chalk.blue("Which one do you want to reveal? "));
-    //input = parseInt(input);
-
-    // with function
-    input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 2);
+    if (userControl) {
+      // with user input
+      input = prompt(chalk.blue("Which one do you want to reveal? "));
+      input = parseInt(input);
+    } else {
+      // with function
+      input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 2);
+    }
 
     //console.log("input: " + input);
     if (nineArray.includes(input) && !visibles.includes(input - 1)) {
       visibles.push(input - 1);
       //console.log("for1: " + input + " i: " + i);
+      console.log(chalk.yellowBright("Slot " + input + " was chosen."));
     } else if (nineArray.includes(input) && visibles.includes(input - 1)) {
       console.log(chalk.red("This slot is already revealed!"));
       i--;
@@ -95,13 +133,22 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     // control output to check if the revealed slots are correct
     //console.log(visibles);
     threebythreeNines(nineArray, visibles);
-    console.log("--- next step ---");
-    solverPrimitive(nineArray, visibles, prizes, fullNines, false, 0);
+    if (i < 2) {
+      console.log("--- next reveal ---");
+    } else {
+      console.log("--- set choice ---");
+    }
+
+    solverPrimitive(nineArray, visibles, prizes, fullNines, log, 0);
   }
 }
 
 // This function aims to have the player select which set to choose as their final answer. The player will be asked to input a valid set, otherwise they will contiuously get asked to input a valid one. The output message will be the selected set, its cross sum and the prize
 function setSelect2(nineArray, prizes, visibles, fullNines) {
+  // variable to toggle log showcases
+  let log = false;
+  // variable to toggle whether to automatically solve or allow the user to choose
+  let userControl = false;
   let sumString = ". The cross sum is: ";
   let prizeString = ". Your prize is: ";
   let selectString = " was selected! Your numbers are: ";
@@ -128,16 +175,17 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
   ];
 
   do {
-    // with user input
-    /*
-    input = prompt(
-      chalk.blue(
-        "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
-      )
-    );*/
-
-    // using function input
-    input = solverPrimitive(nineArray, visibles, prizes, fullNines, false, 1);
+    if (userControl) {
+      // with user input
+      input = prompt(
+        chalk.blue(
+          "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
+        )
+      );
+    } else {
+      // using function input
+      input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 1);
+    }
 
     if (optionsFull.some((x) => x.name === input)) {
       inputFound = optionsFull.find((x) => x.name === input).set;
@@ -161,6 +209,8 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
       );
     }
   } while (flag);
+
+  threebythreeFinal(nineArray, visibles, input);
 }
 
 // Function to return all currently urevealed number slots of a given set of nine numbers
@@ -706,7 +756,6 @@ function solverPrimitive(nineArray, visibles, prizes, ninesFull, log, flag) {
 // Function that starts the game.
 function gameStart(nineArray, visibles, prizes, fullNines) {
   revealing2(nineArray, visibles, prizes, fullNines);
-  //solverPrimitive(nineArray, visibles, prizes, fullNines, true, 0);
   setSelect2(nineArray, prizes, visibles, fullNines);
 }
 
@@ -723,7 +772,7 @@ const startValue = Math.floor(Math.random() * 9);
 //const prompt = require("prompt-sync")();
 const prompt = promptSync();
 // variable to enable or disable log printing during the game
-let log = false;
+let log = true;
 
 // an array to showcase the prizes available for each cross sum
 const prizes = [
@@ -809,7 +858,7 @@ if (promptInput === "yes") {
   console.log("Base Array: " + ninesClean);
   console.log("Shuffled Array: " + shuffledNines);
   //console.log(ninesFull);
-  console.log("startvalue: " + startValue);
+  console.log("startvalue: " + startValue + " => Slot: " + (startValue + 1));
   console.log(visibles);
 
   // output the array in a three be three row/column format for better visualization
@@ -861,9 +910,6 @@ console.log(
 // Game start
 
 // to do
-// create differentiation case for self play or user input play
-// add more comments to explain functions and why thinks work the way they do, possibly refactor or change things
-
 // use actual algorithm theory for value assignments, have all possible options as values
 
 console.log(chalk.green(" //// Start of the game ////"));
@@ -871,18 +917,19 @@ console.log(chalk.green(" //// Start of the game ////"));
 console.log(chalk.blue("Three by three with hidden:"));
 
 threebythreeNines(shuffledNines, visibles);
-console.log("--- start ---");
-solverPrimitive(shuffledNines, visibles, prizes, ninesFull, log, 0);
+//console.log("--- start ---");
+//solverPrimitive(shuffledNines, visibles, prizes, ninesFull, log, 0);
 gameStart(shuffledNines, visibles, prizes, ninesFull);
 console.log(
   chalk.blueBright(
-    "Average achievable prize value on this board configuration: " +
+    "Average achievable prize value on this board configuration was: " +
       boardValue / 8
   )
 );
 
 /*
 // For self start with test values //
+let starter = [4];
 shuffledNines = [4, 9, 1, 6, 2, 8, 5, 7, 3];
 ninesFull = [
   { value: shuffledNines[0], visib: false },
@@ -895,9 +942,9 @@ ninesFull = [
   { value: shuffledNines[7], visib: false },
   { value: shuffledNines[8], visib: false },
 ];
-threebythreeNines(shuffledNines, [4]);
-solverPrimitive(shuffledNines, [4], prizes, ninesFull, true, 0);
-gameStart(shuffledNines, [4], prizes, ninesFull);
+threebythreeNines(shuffledNines, starter);
+solverPrimitive(shuffledNines, starter, prizes, ninesFull, log, 0);
+gameStart(shuffledNines, starter, prizes, ninesFull);
 */
 
 console.log(chalk.green(" //// End of the game ////"));
