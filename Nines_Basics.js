@@ -96,7 +96,7 @@ function prizeSelect(prizes, value) {
 // Refactored version of the revealing function.
 function revealing2(nineArray, visibles, prizes, fullNines) {
   // variable to toggle log showcases
-  let log = false;
+  let log = true;
   // variable to toggle whether to automatically solve or allow the user to choose
   let userControl = false;
   let input;
@@ -109,7 +109,8 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
       input = parseInt(input);
     } else {
       // with function
-      input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 2);
+      //input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 2);
+      input = solverMathy(nineArray, visibles, prizes, fullNines, false, 2);
     }
 
     //console.log("input: " + input);
@@ -139,14 +140,15 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
       console.log("--- set choice ---");
     }
 
-    solverPrimitive(nineArray, visibles, prizes, fullNines, log, 0);
+    //solverPrimitive(nineArray, visibles, prizes, fullNines, log, 0);
+    solverMathy(nineArray, visibles, prizes, fullNines, log, 0);
   }
 }
 
 // This function aims to have the player select which set to choose as their final answer. The player will be asked to input a valid set, otherwise they will contiuously get asked to input a valid one. The output message will be the selected set, its cross sum and the prize
 function setSelect2(nineArray, prizes, visibles, fullNines) {
   // variable to toggle log showcases
-  let log = false;
+  let log = true;
   // variable to toggle whether to automatically solve or allow the user to choose
   let userControl = false;
   let sumString = ". The cross sum is: ";
@@ -184,7 +186,8 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
       );
     } else {
       // using function input
-      input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 1);
+      //input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 1);
+      input = solverMathy(nineArray, visibles, prizes, fullNines, false, 1);
     }
 
     if (optionsFull.some((x) => x.name === input)) {
@@ -316,6 +319,8 @@ function slotValue(optionsArray) {
     });
   });
 
+  // logs for slotvaluesstuff
+
   //console.log("// slotvalues//");
   //console.log(data);
 
@@ -350,6 +355,457 @@ function trimOptions(opts, fulln, visibs) {
   //console.log(trimmedOpts);
 
   return trimmedOpts;
+}
+
+// function to calculate the factorial of a number
+function fact(n) {
+  let res = 1;
+  for (let i = 1; i <= n; i++) {
+    res *= i;
+  }
+  return res;
+}
+
+function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
+  let toCut = [];
+
+  let amount = 0;
+  let count = 0;
+
+  let options = [];
+
+  let best = { option: "abc", value: 0 };
+
+  for (let i = 0; i < visibles.length; i++) {
+    toCut.push(nineArray[visibles[i]]);
+  }
+
+  for (let j = 0; j < visibles.length; j++) {
+    ninesFull[visibles[j]].visib = true;
+  }
+
+  let leftovers = unrevealed(nineArray, visibles);
+
+  // control output
+  //console.log(ninesFull);
+  if (log) {
+    console.log("leftovers: " + leftovers);
+  }
+
+  const row1 = [ninesFull[0], ninesFull[1], ninesFull[2]];
+  const row2 = [ninesFull[3], ninesFull[4], ninesFull[5]];
+  const row3 = [ninesFull[6], ninesFull[7], ninesFull[8]];
+  const column1 = [ninesFull[0], ninesFull[3], ninesFull[6]];
+  const column2 = [ninesFull[1], ninesFull[4], ninesFull[7]];
+  const column3 = [ninesFull[2], ninesFull[5], ninesFull[8]];
+  const diagonalLeft = [ninesFull[0], ninesFull[4], ninesFull[8]];
+  const diagonalRight = [ninesFull[2], ninesFull[4], ninesFull[6]];
+
+  const sets = [
+    { name: "row1", set: row1, slots: [1, 2, 3] },
+    { name: "row2", set: row2, slots: [4, 5, 6] },
+    { name: "row3", set: row3, slots: [7, 8, 9] },
+    { name: "column1", set: column1, slots: [1, 4, 7] },
+    { name: "column2", set: column2, slots: [2, 5, 8] },
+    { name: "column3", set: column3, slots: [3, 6, 9] },
+    { name: "diagonal left", set: diagonalLeft, slots: [1, 5, 9] },
+    { name: "diagonal right", set: diagonalRight, slots: [3, 5, 7] },
+  ];
+
+  sets.forEach(function (element) {
+    if (element.set[0].visib && element.set[1].visib && element.set[2].visib) {
+      // case for all elements being visible
+      if (log) {
+        //console.log("Current element: " + element.name);
+        console.log(chalk.magentaBright("Full set detected! " + element.name));
+
+        //console.log(element.set);
+
+        //console.log("aaa " + element.set[0].value);
+
+        console.log(
+          chalk.green(
+            "Value if you choose this option: " +
+              crossSum([
+                element.set[0].value,
+                element.set[1].value,
+                element.set[2].value,
+              ]) +
+              ": " +
+              prizes[
+                prizeSelect(
+                  prizes,
+                  crossSum([
+                    element.set[0].value,
+                    element.set[1].value,
+                    element.set[2].value,
+                  ])
+                )
+              ].prize
+          )
+        );
+      }
+
+      options.push({
+        option: element.name,
+        value:
+          prizes[
+            prizeSelect(
+              prizes,
+              crossSum([
+                element.set[0].value,
+                element.set[1].value,
+                element.set[2].value,
+              ])
+            )
+          ].prize,
+        slots: slotsFromName(element.name),
+      });
+    } else if (
+      (element.set[0].visib && element.set[1].visib && !element.set[2].visib) ||
+      (element.set[1].visib && element.set[2].visib && !element.set[0].visib) ||
+      (element.set[0].visib && element.set[2].visib && !element.set[1].visib)
+    ) {
+      // case for only 2 elements are visible
+      let twos = [];
+
+      amount = 0;
+      count = 0;
+
+      if (element.set[0].visib) {
+        twos.push(element.set[0].value);
+      }
+      if (element.set[1].visib) {
+        twos.push(element.set[1].value);
+      }
+      if (element.set[2].visib) {
+        twos.push(element.set[2].value);
+      }
+
+      if (log) {
+        //if (log) {
+        //console.log("twos: " + twos);
+        //console.log("Current element: " + element.name);
+        console.log(
+          chalk.magentaBright("Almost full set detected! " + element.name)
+        );
+      }
+      leftovers.forEach(function (left) {
+        if (log) {
+          console.log(
+            "Possible crossum: " +
+              (crossSum(twos) + left) +
+              " with the prize: " +
+              prizes[prizeSelect(prizes, crossSum(twos) + left)].prize
+          );
+        }
+        count++;
+        amount =
+          amount + prizes[prizeSelect(prizes, crossSum(twos) + left)].prize;
+      });
+      if (log) {
+        console.log("Amount of options: " + count);
+        console.log("Total prize amounts: " + amount);
+        console.log(
+          chalk.green(
+            "Average value of choosing this option: " + amount / count
+          )
+        );
+      }
+      options.push({
+        option: element.name,
+        value: amount / count,
+        slots: slotsFromName(element.name),
+      });
+    } else if (
+      (element.set[0].visib &&
+        !element.set[1].visib &&
+        !element.set[2].visib) ||
+      (!element.set[0].visib &&
+        element.set[1].visib &&
+        !element.set[2].visib) ||
+      (!element.set[0].visib && !element.set[1].visib && element.set[2].visib)
+    ) {
+      // case for only one element being visible
+
+      let possibles =
+        fact(leftovers.length) / (fact(leftovers.length - 2) * fact(2));
+
+      amount = 0;
+      count = 0;
+
+      let duoSets = [];
+      let onlyOne = 999;
+
+      for (let i = 0; i < leftovers.length - 1; i++) {
+        for (let j = i + 1; j < leftovers.length; j++) {
+          duoSets.push([leftovers[i], leftovers[j]]);
+        }
+      }
+      if (log) {
+        console.log(
+          chalk.magentaBright("Only 1 Element visible in: " + element.name)
+        );
+      }
+      //console.log(duoSets);
+
+      if (element.set[0].visib) {
+        onlyOne = element.set[0].value;
+      } else if (element.set[1].visib) {
+        onlyOne = element.set[1].value;
+      } else if (element.set[2].visib) {
+        onlyOne = element.set[2].value;
+      }
+
+      let oneDuo = [];
+
+      duoSets.forEach(function (duo) {
+        oneDuo = [onlyOne, duo[0], duo[1]];
+        if (log) {
+          console.log(
+            "Possible crossum: " +
+              crossSum(oneDuo) +
+              " with the prize: " +
+              prizes[prizeSelect(prizes, crossSum(oneDuo))].prize
+          );
+        }
+        count++;
+        amount = amount + prizes[prizeSelect(prizes, crossSum(oneDuo))].prize;
+      });
+
+      if (log) {
+        console.log("Amount of options: " + count);
+        console.log("Total prize amounts: " + amount);
+        console.log(
+          chalk.green(
+            "Average value of choosing this option: " + amount / count
+          )
+        );
+      }
+      options.push({
+        option: element.name,
+        value: amount / count,
+        slots: slotsFromName(element.name),
+      });
+      //
+      //
+      //
+      //
+      //
+      //
+      /*
+      if ([1, 2, 3].includes(element.set[0].value)) {
+        let threes = [1, 2, 3];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
+        let index = threes.indexOf(element.set[0].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        //console.log("///threes right now///: " + threes);
+        //console.log(element.set);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          //console.log("//pushing//");
+          options.push({
+            option: element.name,
+            value: 1002,
+            slots: slotsFromName(element.name),
+          });
+        }
+      } else if ([7, 8, 9].includes(element.set[0].value)) {
+        let threes = [7, 8, 9];
+        //console.log(chalk.red("///////"));
+        //console.log("Current element ONLY ONE: " + element.name);
+        //console.log(chalk.red("///////"));
+        let index = threes.indexOf(element.set[0].value);
+        if (index > -1) {
+          threes.splice(index, 1);
+        }
+        //console.log("///threes right now///: " + threes);
+        //console.log(element.set);
+        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
+          //console.log("//pushing//");
+          options.push({
+            option: element.name,
+            value: 362,
+            slots: slotsFromName(element.name),
+          });
+        }
+      }*/
+    } else if (
+      !element.set[0].visib &&
+      !element.set[1].visib &&
+      !element.set[2].visib
+    ) {
+      // case for all three elements are invisible
+      let possibles =
+        fact(leftovers.length) / (fact(leftovers.length - 2) * fact(2));
+
+      amount = 0;
+      count = 0;
+
+      let triSets = [];
+      let onlyOne = 999;
+
+      for (let i = 0; i < leftovers.length - 1; i++) {
+        for (let j = i + 1; j < leftovers.length; j++) {
+          for (let k = j + 1; k < leftovers.length; k++) {
+            triSets.push([leftovers[i], leftovers[j], leftovers[k]]);
+          }
+        }
+      }
+      if (log) {
+        console.log(
+          chalk.magentaBright("All Elements invisible in: " + element.name)
+        );
+      }
+      //console.log(triSets);
+
+      triSets.forEach(function (tri) {
+        if (log) {
+          console.log(
+            "Possible crossum: " +
+              crossSum(tri) +
+              " with the prize: " +
+              prizes[prizeSelect(prizes, crossSum(tri))].prize
+          );
+        }
+        count++;
+        amount = amount + prizes[prizeSelect(prizes, crossSum(tri))].prize;
+      });
+
+      if (log) {
+        console.log("Amount of options: " + count);
+        console.log("Total prize amounts: " + amount);
+        console.log(
+          chalk.green(
+            "Average value of choosing this option: " + amount / count
+          )
+        );
+      }
+      options.push({
+        option: element.name,
+        value: amount / count,
+        slots: slotsFromName(element.name),
+      });
+
+      /*
+      if (
+        leftovers.includes(1) &&
+        leftovers.includes(2) &&
+        leftovers.includes(3)
+      ) {
+        options.push({
+          option: element.name,
+          value: 1001,
+          slots: slotsFromName(element.name),
+        });
+      } else if (
+        leftovers.includes(7) &&
+        leftovers.includes(8) &&
+        leftovers.includes(9)
+      ) {
+        options.push({
+          option: element.name,
+          value: 361,
+          slots: slotsFromName(element.name),
+        });
+      } else if (
+        leftovers.includes(6) &&
+        leftovers.includes(8) &&
+        leftovers.includes(9)
+      ) {
+        options.push({
+          option: element.name,
+          value: 180,
+          slots: slotsFromName(element.name),
+        });
+      }*/
+    }
+  });
+
+  if (log) {
+    console.log("all options:");
+    console.log(options);
+  }
+
+  let slotvalues = slotValue(options);
+
+  // control information for slotvalues
+  //console.log("//slotvalues//");
+  //console.log(slotvalues);
+
+  /*
+  slotvalues.forEach(function (sv) {
+    visibles.forEach(function (vis) {
+      if (sv.number == vis + 1) {
+        let index = slotvalues.indexOf(vis + 1);
+        slotvalues.splice(index, 1);
+      }
+    });
+  });
+  */
+
+  //slotvalues = removeVisibles(slotvalues, visibles);
+
+  let trimmedSlots = trimOptions(slotvalues, nineArray, visibles);
+
+  /*
+  if (log) {
+  console.log("//visibless //");
+  console.log(visibles);
+  console.log("//slotvalues CUT//");
+  console.log(trimmedSlots);
+  console.log("/// Slotvalues SORTED ///");
+    }
+  */
+
+  if (visibles.length < 4) {
+    let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
+
+    if (log) {
+      console.log(
+        chalk.blue("Unrevealed slot values sorted by value descending")
+      );
+      console.log(slotvaluesSorted);
+    }
+
+    if (flag == 2) {
+      return slotvaluesSorted[0].number;
+    }
+
+    /*if (log) {
+      console.log(
+        chalk.blue("Unrevealed slot values sorted by value descending")
+      );
+      console.log(slotvaluesSorted);
+    }*/
+  }
+
+  options.forEach(function (opt) {
+    if (opt.value > best.value) {
+      best.option = opt.option;
+      best.value = opt.value;
+    }
+  });
+
+  if (flag == 1) {
+    return best.option;
+  }
+
+  if (visibles.length == 4) {
+    if (log) {
+      console.log(
+        chalk.yellow(
+          "The best option is: " +
+            best.option +
+            " - with an average prize of: " +
+            best.value
+        )
+      );
+    }
+  }
 }
 
 // primitive solving function tests
@@ -948,3 +1404,23 @@ gameStart(shuffledNines, starter, prizes, ninesFull);
 */
 
 console.log(chalk.green(" //// End of the game ////"));
+
+/////////////////////////////////
+// TEST SECTION FOR CODE TESTS //
+/////////////////////////////////
+/*
+let leftovers = [1, 2, 3, 4, 5];
+
+let possibles = fact(leftovers.length) / (fact(leftovers.length - 2) * fact(2));
+
+let duoSets = [];
+
+for (let i = 0; i < leftovers.length - 1; i++) {
+  for (let j = i + 1; j < leftovers.length; j++) {
+    duoSets.push([leftovers[i], leftovers[j]]);
+  }
+}
+console.log(duoSets);
+// access works like this:
+console.log(duoSets[5][1]);
+*/
