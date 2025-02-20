@@ -110,7 +110,7 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     } else {
       // with function
       //input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 2);
-      input = solverMathy(nineArray, visibles, prizes, fullNines, false, 2);
+      input = solverMathy(nineArray, visibles, prizes, fullNines, log, 2);
     }
 
     //console.log("input: " + input);
@@ -141,14 +141,14 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     }
 
     //solverPrimitive(nineArray, visibles, prizes, fullNines, log, 0);
-    solverMathy(nineArray, visibles, prizes, fullNines, log, 0);
+    solverMathy(nineArray, visibles, prizes, fullNines, false, 0);
   }
 }
 
 // This function aims to have the player select which set to choose as their final answer. The player will be asked to input a valid set, otherwise they will contiuously get asked to input a valid one. The output message will be the selected set, its cross sum and the prize
 function setSelect2(nineArray, prizes, visibles, fullNines) {
   // variable to toggle log showcases
-  let log = true;
+  let log = false;
   // variable to toggle whether to automatically solve or allow the user to choose
   let userControl = false;
   let sumString = ". The cross sum is: ";
@@ -156,7 +156,7 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
   let selectString = " was selected! Your numbers are: ";
   let input;
   let inputFound;
-  let flag = true;
+  let whileFlag = true;
   const row1 = [nineArray[0], nineArray[1], nineArray[2]];
   const row2 = [nineArray[3], nineArray[4], nineArray[5]];
   const row3 = [nineArray[6], nineArray[7], nineArray[8]];
@@ -187,7 +187,7 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
     } else {
       // using function input
       //input = solverPrimitive(nineArray, visibles, prizes, fullNines, log, 1);
-      input = solverMathy(nineArray, visibles, prizes, fullNines, false, 1);
+      input = solverMathy(nineArray, visibles, prizes, fullNines, log, 1);
     }
 
     if (optionsFull.some((x) => x.name === input)) {
@@ -203,7 +203,7 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
             prizes[prizeSelect(prizes, crossSum(inputFound))].prize
           )
       );
-      flag = false;
+      whileFlag = false;
     } else {
       console.log(
         chalk.red(
@@ -211,7 +211,7 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
         )
       );
     }
-  } while (flag);
+  } while (whileFlag);
 
   threebythreeFinal(nineArray, visibles, input);
 }
@@ -374,6 +374,8 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
 
   let options = [];
 
+  let crossSumLog = false;
+
   let best = { option: "abc", value: 0 };
 
   for (let i = 0; i < visibles.length; i++) {
@@ -491,7 +493,7 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
         );
       }
       leftovers.forEach(function (left) {
-        if (log) {
+        if (crossSumLog) {
           console.log(
             "Possible crossum: " +
               (crossSum(twos) + left) +
@@ -561,7 +563,7 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
 
       duoSets.forEach(function (duo) {
         oneDuo = [onlyOne, duo[0], duo[1]];
-        if (log) {
+        if (crossSumLog) {
           console.log(
             "Possible crossum: " +
               crossSum(oneDuo) +
@@ -588,51 +590,6 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
         slots: slotsFromName(element.name),
       });
       //
-      //
-      //
-      //
-      //
-      //
-      /*
-      if ([1, 2, 3].includes(element.set[0].value)) {
-        let threes = [1, 2, 3];
-        //console.log(chalk.red("///////"));
-        //console.log("Current element ONLY ONE: " + element.name);
-        //console.log(chalk.red("///////"));
-        let index = threes.indexOf(element.set[0].value);
-        if (index > -1) {
-          threes.splice(index, 1);
-        }
-        //console.log("///threes right now///: " + threes);
-        //console.log(element.set);
-        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
-          //console.log("//pushing//");
-          options.push({
-            option: element.name,
-            value: 1002,
-            slots: slotsFromName(element.name),
-          });
-        }
-      } else if ([7, 8, 9].includes(element.set[0].value)) {
-        let threes = [7, 8, 9];
-        //console.log(chalk.red("///////"));
-        //console.log("Current element ONLY ONE: " + element.name);
-        //console.log(chalk.red("///////"));
-        let index = threes.indexOf(element.set[0].value);
-        if (index > -1) {
-          threes.splice(index, 1);
-        }
-        //console.log("///threes right now///: " + threes);
-        //console.log(element.set);
-        if (leftovers.includes(threes[0]) && leftovers.includes(threes[1])) {
-          //console.log("//pushing//");
-          options.push({
-            option: element.name,
-            value: 362,
-            slots: slotsFromName(element.name),
-          });
-        }
-      }*/
     } else if (
       !element.set[0].visib &&
       !element.set[1].visib &&
@@ -663,7 +620,7 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
       //console.log(triSets);
 
       triSets.forEach(function (tri) {
-        if (log) {
+        if (crossSumLog) {
           console.log(
             "Possible crossum: " +
               crossSum(tri) +
@@ -689,45 +646,15 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
         value: amount / count,
         slots: slotsFromName(element.name),
       });
-
-      /*
-      if (
-        leftovers.includes(1) &&
-        leftovers.includes(2) &&
-        leftovers.includes(3)
-      ) {
-        options.push({
-          option: element.name,
-          value: 1001,
-          slots: slotsFromName(element.name),
-        });
-      } else if (
-        leftovers.includes(7) &&
-        leftovers.includes(8) &&
-        leftovers.includes(9)
-      ) {
-        options.push({
-          option: element.name,
-          value: 361,
-          slots: slotsFromName(element.name),
-        });
-      } else if (
-        leftovers.includes(6) &&
-        leftovers.includes(8) &&
-        leftovers.includes(9)
-      ) {
-        options.push({
-          option: element.name,
-          value: 180,
-          slots: slotsFromName(element.name),
-        });
-      }*/
     }
   });
 
-  if (log) {
-    console.log("all options:");
-    console.log(options);
+  // if false
+  if (true) {
+    if (visibles.length == 4 && !(flag == 1)) {
+      console.log("all options:");
+      console.log(options);
+    }
   }
 
   let slotvalues = slotValue(options);
@@ -735,17 +662,6 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
   // control information for slotvalues
   //console.log("//slotvalues//");
   //console.log(slotvalues);
-
-  /*
-  slotvalues.forEach(function (sv) {
-    visibles.forEach(function (vis) {
-      if (sv.number == vis + 1) {
-        let index = slotvalues.indexOf(vis + 1);
-        slotvalues.splice(index, 1);
-      }
-    });
-  });
-  */
 
   //slotvalues = removeVisibles(slotvalues, visibles);
 
@@ -764,11 +680,18 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
   if (visibles.length < 4) {
     let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
 
-    if (log) {
+    // if false
+    if (log && visibles.length < 4) {
       console.log(
         chalk.blue("Unrevealed slot values sorted by value descending")
       );
       console.log(slotvaluesSorted);
+
+      console.log(
+        chalk.yellow(
+          "The best slot to reveal is: " + slotvaluesSorted[0].number
+        )
+      );
     }
 
     if (flag == 2) {
@@ -791,11 +714,7 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
   });
 
   if (flag == 1) {
-    return best.option;
-  }
-
-  if (visibles.length == 4) {
-    if (log) {
+    if (true) {
       console.log(
         chalk.yellow(
           "The best option is: " +
@@ -805,7 +724,25 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
         )
       );
     }
+    return best.option;
   }
+
+  // if false
+  //if (visibles.length == 4) {
+  //
+  /*
+  if (true) {
+    console.log(
+      chalk.yellow(
+        "The best option is: " +
+          best.option +
+          " - with an average prize of: " +
+          best.value
+      )
+    );
+  }
+  */
+  //}
 }
 
 // primitive solving function tests
