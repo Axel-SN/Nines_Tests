@@ -105,6 +105,8 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
   for (let i = 0; i < 3; i++) {
     if (userControl) {
       // with user input
+      // works !
+      solverMathy(nineArray, visibles, prizes, fullNines, log, 0);
       input = prompt(chalk.blue("Which one do you want to reveal? "));
       input = parseInt(input);
     } else {
@@ -179,6 +181,8 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
   do {
     if (userControl) {
       // with user input
+      // didnt work
+      solverMathy(nineArray, visibles, prizes, fullNines, log, 3);
       input = prompt(
         chalk.blue(
           "Which set of three numbers do you want to choose? (Allowed inputs are: row1, row2, row3, column1, column2, column3, diagonal left, diagonal right) "
@@ -365,7 +369,12 @@ function fact(n) {
   }
   return res;
 }
-
+// math based solving function
+// calculate all possible results for sets with no, one, two or all three slots revealed
+// use prize values and amount of options
+// the log argument can either be true or false, and will print out all the information of the possible sets and slot choices and values
+// the flag argument can be used to exit the function by returning either the most valuable set choice or the most valuable slot choice
+// flag == 1 -> best set option, flag == 2 -> best slot option, flag == 3 for best set option log
 function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
   let toCut = [];
 
@@ -649,12 +658,11 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
     }
   });
 
-  // if false
-  if (true) {
-    if (visibles.length == 4 && !(flag == 1)) {
-      console.log("all options:");
-      console.log(options);
-    }
+  // if true
+
+  if (visibles.length == 4 && (flag == 0 || flag == 2)) {
+    console.log("all options:");
+    console.log(options);
   }
 
   let slotvalues = slotValue(options);
@@ -713,17 +721,18 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
     }
   });
 
-  if (flag == 1) {
-    if (true) {
-      console.log(
-        chalk.yellow(
-          "The best option is: " +
-            best.option +
-            " - with an average prize of: " +
-            best.value
-        )
-      );
-    }
+  if (flag == 1 || flag == 3) {
+    // if true
+
+    console.log(
+      chalk.yellow(
+        "The best option is: " +
+          best.option +
+          " - with an average prize of: " +
+          best.value
+      )
+    );
+
     return best.option;
   }
 
