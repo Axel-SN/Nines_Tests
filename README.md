@@ -5,9 +5,15 @@ Based on this cross sum value the player receives a prize (weighted towards very
 
 The goal is to simulate this minigame as well as using math to try and find out the optimal way of solving it to have the highest chances of a big prize.
 
+
+Update: 24-02
+
+- value assignment and choice of slot/set through the code is now fully based on calculating all possible options in a given set.
+- logs have been cut down a lot, but can still be opened again to reveal the full details of all options the code keeps in mind when proceeding
+- minor code cleanups, function explanations have been added
+
 Update: 07-02
 
 - The game is now fully playable with user input. 
-
 - A primitive value assignment is given to possible slot-reveal options as well as the final set to lock in.
 - The code is now capable of playing the game on its own, always picking the best reveal and set option based on the primitive value assignments.
