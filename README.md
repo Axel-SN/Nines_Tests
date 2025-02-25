@@ -5,6 +5,14 @@ Based on this cross sum value the player receives a prize (weighted towards very
 
 The goal is to simulate this minigame as well as using math to try and find out the optimal way of solving it to have the highest chances of a big prize.
 
+Update: 25-02
+
+- It is not possible to play through a set amount of configurations after each other
+- Data from each playthrough is passed and later on fed into an array for a primitive data analysis
+- Most recent simulation was running through 1000000 random configurations and yielded these results:
+  ![image](https://github.com/user-attachments/assets/7c824904-462e-4ea1-9a83-dd4ebbaac26b)
+
+
 
 Update: 24-02
 
