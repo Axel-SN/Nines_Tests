@@ -36,7 +36,8 @@ function threebythreeNines(nineArray, args) {
     }
   }
 
-  threebythree(tempArray);
+  // data log cut test
+  //threebythree(tempArray);
 }
 
 // function to log out the fully revealed array, colouring the selected final set to mark it
@@ -96,7 +97,8 @@ function prizeSelect(prizes, value) {
 // Refactored version of the revealing function.
 function revealing2(nineArray, visibles, prizes, fullNines) {
   // variable to toggle log showcases
-  let log = true;
+  // this cuts out most logs besides set choice
+  let log = false;
   // variable to toggle whether to automatically solve or allow the user to choose
   let userControl = false;
   let input;
@@ -204,6 +206,8 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
             prizes[prizeSelect(prizes, crossSum(inputFound))].prize
           )
       );
+      // datapush
+      achieveds.push(prizes[prizeSelect(prizes, crossSum(inputFound))].prize);
       whileFlag = false;
     } else {
       console.log(
@@ -382,6 +386,7 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
   let options = [];
 
   let crossSumLog = false;
+  let optionsLog = false;
 
   let best = { option: "abc", value: 0 };
 
@@ -658,7 +663,9 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
 
   // if true
 
-  if (visibles.length == 4 && (flag == 0 || flag == 2)) {
+  // show all options: yes or no
+
+  if (visibles.length == 4 && (flag == 0 || flag == 2) && optionsLog) {
     console.log("all options:");
     console.log(options);
   }
@@ -766,6 +773,8 @@ function gameStart(nineArray, visibles, prizes, fullNines) {
 
 // variables
 const pv = "Prize if you chose ";
+
+/* 
 const startValue = Math.floor(Math.random() * 9);
 // initialize the usage of the prompt function to allow for user input
 //const prompt = require("prompt-sync")();
@@ -925,6 +934,367 @@ console.log(
   )
 );
 
+console.log(chalk.green(" //// End of the game ////"));
+
+*/
+
+//////////////////////////////////////////////////////////////////
+/////////// REPETITION TESTS
+
+let cycles = 10;
+
+let startValue = 999;
+
+let dataLog = [];
+
+let startConfig = [];
+let firstVisib = [];
+let allVisibs = [];
+let averages = [];
+let onetwothree = [];
+let seveneightnine = [];
+let onetwothreeA = [];
+let seveneightnineA = [];
+let achieveds = [];
+
+let ott = false;
+let sen = false;
+let ottA = false;
+let senA = false;
+
+// initialize the usage of the prompt function to allow for user input
+//const prompt = require("prompt-sync")();
+const prompt = promptSync();
+// variable to enable or disable log printing during the game
+let log = true;
+
+// an array to showcase the prizes available for each cross sum
+const prizes = [
+  { sum: 6, prize: 10000 },
+  { sum: 7, prize: 36 },
+  { sum: 8, prize: 720 },
+  { sum: 9, prize: 360 },
+  { sum: 10, prize: 80 },
+  { sum: 11, prize: 252 },
+  { sum: 12, prize: 108 },
+  { sum: 13, prize: 72 },
+  { sum: 14, prize: 54 },
+  { sum: 15, prize: 180 },
+  { sum: 16, prize: 72 },
+  { sum: 17, prize: 180 },
+  { sum: 18, prize: 119 },
+  { sum: 19, prize: 36 },
+  { sum: 20, prize: 306 },
+  { sum: 21, prize: 1080 },
+  { sum: 22, prize: 144 },
+  { sum: 23, prize: 1800 },
+  { sum: 24, prize: 3600 },
+];
+
+// create a basic array of nine numbers, then create a shuffled array for each instance of a nines game
+const ninesClean = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+let nines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+let ninesFull = [];
+let shuffledNines = [];
+let visibles = [];
+
+let row1 = [];
+let row2 = [];
+let row3 = [];
+let rows = [];
+let column1 = [];
+let column2 = [];
+let column3 = [];
+let columns = [];
+let diagonalLeft = [];
+let diagonalRight = [];
+let diagonals = [];
+let setsFull = [];
+
+for (let loopp = 0; loopp < cycles; loopp++) {
+  startValue = Math.floor(Math.random() * 9);
+
+  ott = false;
+  sen = false;
+  ottA = false;
+  senA = false;
+
+  shuffledNines = shuffleArray(nines);
+
+  // datapush
+  firstVisib.push(startValue);
+  startConfig.push(shuffledNines);
+
+  ninesFull = [
+    { value: shuffledNines[0], visib: false },
+    { value: shuffledNines[1], visib: false },
+    { value: shuffledNines[2], visib: false },
+    { value: shuffledNines[3], visib: false },
+    { value: shuffledNines[4], visib: false },
+    { value: shuffledNines[5], visib: false },
+    { value: shuffledNines[6], visib: false },
+    { value: shuffledNines[7], visib: false },
+    { value: shuffledNines[8], visib: false },
+  ];
+  visibles = [];
+  visibles.push(startValue);
+  ninesFull[startValue].visib = true;
+
+  // define the structures for rows, columns and diagonals in a given set of nines by creating multiple arrays
+  row1 = [shuffledNines[0], shuffledNines[1], shuffledNines[2]];
+  row2 = [shuffledNines[3], shuffledNines[4], shuffledNines[5]];
+  row3 = [shuffledNines[6], shuffledNines[7], shuffledNines[8]];
+  rows = [row1, row2, row3];
+  column1 = [shuffledNines[0], shuffledNines[3], shuffledNines[6]];
+  column2 = [shuffledNines[1], shuffledNines[4], shuffledNines[7]];
+  column3 = [shuffledNines[2], shuffledNines[5], shuffledNines[8]];
+  columns = [column1, column2, column3];
+  diagonalLeft = [shuffledNines[0], shuffledNines[4], shuffledNines[8]];
+  diagonalRight = [shuffledNines[2], shuffledNines[4], shuffledNines[6]];
+  diagonals = [diagonalLeft, diagonalRight];
+  setsFull = [
+    { name: "row1", set: row1, slots: [1, 2, 3] },
+    { name: "row2", set: row2, slots: [4, 5, 6] },
+    { name: "row3", set: row3, slots: [7, 8, 9] },
+    { name: "column1", set: column1, slots: [1, 4, 7] },
+    { name: "column2", set: column2, slots: [2, 5, 8] },
+    { name: "column3", set: column3, slots: [3, 6, 9] },
+    { name: "diagonal left", set: diagonalLeft, slots: [1, 5, 9] },
+    { name: "diagonal right", set: diagonalRight, slots: [3, 5, 7] },
+  ];
+
+  // Control outputs //
+
+  //let promptInput = prompt(
+  //  chalk.red("Do you want to see all information? (yes=show, other=skip) ")
+  //);
+
+  let promptInput = "no";
+
+  let boardValue = 0;
+
+  if (promptInput === "yes") {
+    console.log(chalk.green(" //// CONTROL OUTPUTS ////"));
+
+    // output the base array and the shuffled array
+    console.log("Base Array: " + ninesClean);
+    console.log("Shuffled Array: " + shuffledNines);
+    //console.log(ninesFull);
+    console.log("startvalue: " + startValue + " => Slot: " + (startValue + 1));
+    console.log(visibles);
+
+    // output the array in a three be three row/column format for better visualization
+    console.log("Three by three:");
+    threebythree(shuffledNines);
+    //console.log("Three by three with hidden:");
+    //threebythreeNines(shuffledNines, visibles);
+    //threebythreeNines(shuffledNines, [1, 3, 5, 6, 7, 8]);
+
+    // calculate and output the cross sum of each row, column and diagonal
+    console.log("Cross sum of row1: " + crossSum(row1));
+    console.log("Cross sum of row2: " + crossSum(row2));
+    console.log("Cross sum of row3: " + crossSum(row3));
+    console.log("Cross sum of column1: " + crossSum(column1));
+    console.log("Cross sum of column2: " + crossSum(column2));
+    console.log("Cross sum of column3: " + crossSum(column3));
+    console.log(
+      "Cross sum of diagonal Upper left to lower right: " +
+        crossSum(diagonalLeft)
+    );
+    console.log(
+      "Cross sum of diagonal Upper right to lower left: " +
+        crossSum(diagonalRight)
+    );
+  }
+  // Show the prize of each cross sum for the given set of nines
+  setsFull.forEach(function (set) {
+    if (promptInput === "yes") {
+      console.log(
+        pv +
+          set.name +
+          " = " +
+          crossSum(set.set) +
+          ": " +
+          prizes[prizeSelect(prizes, crossSum(set.set))].prize
+      );
+    }
+    boardValue =
+      boardValue + prizes[prizeSelect(prizes, crossSum(set.set))].prize;
+  });
+
+  // calculate the average prize value the user should be expecting on this given boards configuration (not accounting for the starting position)
+  if (promptInput === "yes") {
+    console.log(
+      chalk.blueBright(
+        "Average achievable prize value on this board configuration: " +
+          boardValue / 8
+      )
+    );
+  }
+
+  console.log(chalk.green(" //// Start of the game ////"));
+
+  console.log(chalk.blue("Three by three with hidden:"));
+
+  threebythreeNines(shuffledNines, visibles);
+  //console.log("--- start ---");
+  gameStart(shuffledNines, visibles, prizes, ninesFull);
+  console.log(
+    chalk.blueBright(
+      "Average achievable prize value on this board configuration was: " +
+        boardValue / 8
+    )
+  );
+
+  // datapush
+  allVisibs.push(visibles);
+  averages.push(boardValue / 8);
+
+  setsFull.forEach(function (set) {
+    if (crossSum(set.set) == 6) {
+      ott = true;
+    } else if (crossSum(set.set) == 24) {
+      sen = true;
+    }
+  });
+
+  onetwothree.push(ott);
+  seveneightnine.push(sen);
+
+  if (achieveds[loopp] == 10000 && ott) {
+    ottA = true;
+  }
+  onetwothreeA.push(ottA);
+  if (achieveds[loopp] == 3600 && sen) {
+    senA = true;
+  }
+  seveneightnineA.push(senA);
+
+  dataLog.push({
+    startconfiguration: startConfig[loopp],
+    firstVisible: firstVisib[loopp],
+    allVisibles: allVisibs[loopp],
+    OneTwoThreePossible: onetwothree[loopp],
+    SevenEightNinePossible: seveneightnine[loopp],
+    OneTwoThreeAchived: onetwothreeA[loopp],
+    SevenEightNineAchieved: seveneightnineA[loopp],
+    averageConfigValue: averages[loopp],
+    achievedPrize: achieveds[loopp],
+  });
+
+  //console.log("/// " + achieveds + " ///");
+
+  console.log(chalk.green(" //// End of the game ////"));
+}
+
+//console.log(dataLog);
+
+// primitive data analysis
+
+let boardsPlayed = 0;
+let hvBoard = 0;
+let hvHelper = 0;
+let ottP = 0;
+let senP = 0;
+let ottM = 0;
+let senM = 0;
+let ottF = 0;
+let senF = 0;
+let underAvg = 0;
+let overAvg = 0;
+let averageVs = 0;
+let achievedVs = 0;
+
+let primitiveAnalysis = [];
+
+dataLog.forEach(function (dataset) {
+  hvHelper = 0;
+
+  boardsPlayed++;
+
+  if (dataset.OneTwoThreePossible) {
+    hvHelper++;
+    ottP++;
+    if (dataset.OneTwoThreeAchived) {
+      ottF++;
+    } else {
+      ottM++;
+    }
+  }
+  if (dataset.SevenEightNinePossible) {
+    hvHelper++;
+    senP++;
+    if (dataset.SevenEightNineAchieved) {
+      senF++;
+    } else {
+      senM++;
+    }
+  }
+  if (hvHelper > 0) {
+    hvBoard++;
+  }
+  if (dataset.averageConfigValue < dataset.achievedPrize) {
+    overAvg++;
+  } else {
+    underAvg++;
+  }
+
+  averageVs = averageVs + dataset.averageConfigValue;
+  achievedVs = achievedVs + dataset.achievedPrize;
+});
+
+let hvBoardPercent = "";
+let hvBoardPercentV = hvBoard / (boardsPlayed / 100);
+hvBoardPercent = hvBoardPercentV + " %";
+
+let ottPercent = "";
+let ottPercentV = 0;
+if (ottP > 0) {
+  ottPercentV = ottF / (ottP / 100);
+}
+ottPercent = ottPercentV + " %";
+
+let senPercent = "";
+let senPercentV = 0;
+if (senP > 0) {
+  senPercentV = senF / (senP / 100);
+}
+senPercent = senPercentV + " %";
+
+let averagePercent = "";
+let averagePercentV = overAvg / (boardsPlayed / 100);
+averagePercent = averagePercentV + " %";
+
+primitiveAnalysis = [
+  {
+    boardsPlayedTotal: boardsPlayed,
+    highValueBoards: hvBoard,
+    hvBoardPercentage: hvBoardPercent,
+    possibleOTTs: ottP,
+    missedOTTs: ottM,
+    foundOTTs: ottF,
+    ottFindPercentage: ottPercent,
+    possibleSENs: senP,
+    missedSENs: senM,
+    foundSENs: senF,
+    senFindPercentage: senPercent,
+    resultsUnderAvg: underAvg,
+    resultsOverAvg: overAvg,
+    overAveragePercent: averagePercent,
+    allAverageValues: averageVs,
+    allAchievedValues: achievedVs,
+    achievedAvgDiff: achievedVs - averageVs,
+  },
+];
+
+console.log("////////");
+console.log(primitiveAnalysis);
+
+/////////////////////////////////
+// TEST SECTION FOR CODE TESTS //
+/////////////////////////////////
+
 /*
 // For self start with test values //
 let starter = [4];
@@ -944,11 +1314,6 @@ threebythreeNines(shuffledNines, starter);
 gameStart(shuffledNines, starter, prizes, ninesFull);
 */
 
-console.log(chalk.green(" //// End of the game ////"));
-
-/////////////////////////////////
-// TEST SECTION FOR CODE TESTS //
-/////////////////////////////////
 /*
 let leftovers = [1, 2, 3, 4, 5];
 
