@@ -13,7 +13,7 @@ function shuffleArray(array) {
 
 // A funtion to output an array containing nine elements in a three by three format to showcase rows and columns better
 function threebythree(array) {
-  for (let i = 0; i < 8; i = i + 3) {
+  for (let i = 0; i < array.length; i += 3) {
     console.log(
       chalk.magentaBright(array[i]) +
         " - " +
@@ -24,73 +24,47 @@ function threebythree(array) {
   }
 }
 
-// This function aims to display a set of nine numbers, but only for numbers present in the args array, anything else will be marked with an X
-function threebythreeNines(nineArray, args) {
-  let tempArray = [];
-
-  for (let i = 0; i < nineArray.length; i++) {
-    if (args.includes(i)) {
-      tempArray.push(chalk.green(nineArray[i]));
-    } else {
-      tempArray.push("X");
-    }
-  }
+// This function aims to display a set of nine numbers, but only for numbers present in the highlights array, anything else will be marked with an X
+function threebythreeNines(nineArray, highlights) {
+  // create a Set which houses the only slots to be highlighted
+  const tempHighlights = new Set(highlights);
+  // create a temporary array, mapping its contents by using the Set and either marking it as green or just an X
+  const tempArray = nineArray.map((num, index) =>
+    tempHighlights.has(index) ? chalk.green(num) : "X"
+  );
 
   // data log cut test
-  //threebythree(tempArray);
+  threebythree(tempArray);
 }
 
 // function to log out the fully revealed array, colouring the selected final set to mark it
 function threebythreeFinal(nineArray, visibles, input) {
   let colourSlots = slotsFromName(input);
-  let log1 = "";
-  let log2 = "";
-  let log3 = "";
 
-  for (let i = 0; i < 8; i = i + 3) {
-    if (colourSlots.includes(i + 1)) {
-      log1 = chalk.yellowBright(nineArray[i]);
-    } else {
-      log1 = chalk.magentaBright(nineArray[i]);
-    }
-
-    if (colourSlots.includes(i + 2)) {
-      log2 = chalk.yellowBright(nineArray[i + 1]);
-    } else {
-      log2 = chalk.magentaBright(nineArray[i + 1]);
-    }
-
-    if (colourSlots.includes(i + 3)) {
-      log3 = chalk.yellowBright(nineArray[i + 2]);
-    } else {
-      log3 = chalk.magentaBright(nineArray[i + 2]);
-    }
-
-    console.log(log1 + " - " + log2 + " - " + log3);
-  }
+  const tempColours = nineArray.map((num, index) =>
+    colourSlots.includes(index + 1)
+      ? chalk.yellowBright(num)
+      : chalk.magentaBright(num)
+  );
+  threebythree(tempColours);
 }
 
 // A function that calculates the cross sum of a given set of numbers as an array
 function crossSum(array) {
-  let sum = 0;
-  for (let i = 0; i < array.length; i++) {
-    sum = sum + array[i];
-  }
-  return sum;
+  return array.reduce((sum, number) => sum + number, 0);
 }
 
 // A function that uses a passed value of a cross sum and returns the given element index of the prizes array to be used
 function prizeSelect(prizes, value) {
-  // alternative
-  //if (prizes.some((x) => x.sum === value)) {
-  //}
+  const index = prizes.findIndex((prize) => prize.sum === value);
 
-  for (let b = 0; b < prizes.length; b++) {
-    if (prizes[b].sum == value) {
-      return b;
-    }
+  // check if index was found
+  if (index !== -1) {
+    return index;
+  } else {
+    // none found
+    return 0;
   }
-  return 0;
 }
 
 // A function that is supposed to simulate the player choosing three spots to reveal, the only accepted inputs should be unrevealed numbers, to not have to deal with edge cases and faulty inputs.
@@ -223,117 +197,48 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
 
 // Function to return all currently urevealed number slots of a given set of nine numbers
 function unrevealed(nineArray, visibles) {
-  const nine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  let toCut = [];
-  let leftovers = [];
-
-  for (let i = 0; i < visibles.length; i++) {
-    toCut.push(nineArray[visibles[i]]);
-  }
-
-  leftovers = nine.filter(function (element) {
-    return !toCut.includes(element);
-  });
-
-  return leftovers;
-  //console.log("to cut: " + toCut);
-  //console.log("leftovers: " + leftovers);
+  // change from multiple arrays to a set for quicker lookup functionality
+  const toCut = new Set(visibles.map((i) => nineArray[i]));
+  // return only the numbers that arent in toCut
+  return nineArray.filter((number) => !toCut.has(number));
 }
 
 // function to get the slots of a given set
-// this function is called
 function slotsFromName(name) {
-  switch (name) {
-    case "row1":
-      return [1, 2, 3];
-      break;
-    case "row2":
-      return [4, 5, 6];
-      break;
-    case "row3":
-      return [7, 8, 9];
-      break;
-    case "column1":
-      return [1, 4, 7];
-      break;
-    case "column2":
-      return [2, 5, 8];
-      break;
-    case "column3":
-      return [3, 6, 9];
-      break;
-    case "diagonal left":
-      return [1, 5, 9];
-      break;
-    case "diagonal right":
-      return [3, 5, 7];
-      break;
-    default:
-      console.log(chalk.red("I think something broke"));
-      return [123, 123, 123];
+  const slots = {
+    row1: [1, 2, 3],
+    row2: [4, 5, 6],
+    row3: [7, 8, 9],
+    column1: [1, 4, 7],
+    column2: [2, 5, 8],
+    column3: [3, 6, 9],
+    "diagonal left": [1, 5, 9],
+    "diagonal right": [3, 5, 7],
+  };
+
+  if (slots[name]) {
+    return slots[name];
+  } else {
+    console.log(chalk.red(`I think something broke. You typed: ${name}`));
+    // to note the error
+    return null;
   }
 }
 
 // function to tally value amounts for given slots
 function slotValue(optionsArray) {
-  let data = [
-    { number: 1, value: 0 },
-    { number: 2, value: 0 },
-    { number: 3, value: 0 },
-    { number: 4, value: 0 },
-    { number: 5, value: 0 },
-    { number: 6, value: 0 },
-    { number: 7, value: 0 },
-    { number: 8, value: 0 },
-    { number: 9, value: 0 },
-  ];
+  // create the data array by filling it instead of a lengthy list manually, using map to increase the index number and keeping the starting value to 0
+  let data = Array(9)
+    .fill({ value: 0 })
+    .map((_, index) => ({ number: index + 1, value: 0 }));
 
-  optionsArray.forEach(function (set) {
-    set.slots.forEach(function (slot) {
-      switch (slot) {
-        case 1:
-          data[0].value += set.value;
-          break;
-        case 2:
-          data[1].value += set.value;
-          break;
-        case 3:
-          data[2].value += set.value;
-          break;
-        case 4:
-          data[3].value += set.value;
-          break;
-        case 5:
-          data[4].value += set.value;
-          break;
-        case 6:
-          data[5].value += set.value;
-          break;
-        case 7:
-          data[6].value += set.value;
-          break;
-        case 8:
-          data[7].value += set.value;
-          break;
-        case 9:
-          data[8].value += set.value;
-          break;
-        default:
-          console.log(chalk.red("I think we shouldnt be here..."));
-          break;
-      }
+  // loop through options and then all sets.slots to add the slotvalues
+  optionsArray.forEach((set) => {
+    set.slots.forEach((slot) => {
+      // adding values, slot-1 for index
+      data[slot - 1].value += set.value;
     });
   });
-
-  // logs for slotvaluesstuff
-
-  //console.log("// slotvalues//");
-  //console.log(data);
-
-  //console.log("// slotvalues SORTED//");
-  //console.log(data.sort((a, b) => b.value - a.value));
-
-  //return data.sort((a, b) => b.value - a.value);
 
   return data;
 }
@@ -945,19 +850,30 @@ let cycles = 10;
 
 let startValue = 999;
 
+// array to save information
 let dataLog = [];
-
+// the starting configuration of the nine numbers
 let startConfig = [];
+// the first visible slot
 let firstVisib = [];
+// all final visible slots
 let allVisibs = [];
+// the average prize amount if picking a random set
 let averages = [];
+// existence of a 1-2-3 set
 let onetwothree = [];
+// existence of a 7-8-9 set
 let seveneightnine = [];
+// was a 1-2-3 achieved
 let onetwothreeA = [];
+// was a 7-8-9 achieved
 let seveneightnineA = [];
+// how many achieved total
 let achieveds = [];
 
+// OTT refers to One Two Three
 let ott = false;
+// SEN refers to Seven Eight Nine
 let sen = false;
 let ottA = false;
 let senA = false;
