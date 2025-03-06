@@ -41,6 +41,7 @@ function threebythreeNines(nineArray, highlights) {
 function threebythreeFinal(nineArray, visibles, input) {
   let colourSlots = slotsFromName(input);
 
+  // create array for coloured numbers, map the different colours on the index based on being included in colourslots
   const tempColours = nineArray.map((num, index) =>
     colourSlots.includes(index + 1)
       ? chalk.yellowBright(num)
@@ -230,6 +231,7 @@ function slotValue(optionsArray) {
   // create the data array by filling it instead of a lengthy list manually, using map to increase the index number and keeping the starting value to 0
   let data = Array(9)
     .fill({ value: 0 })
+    // _ as a throwaway variable because its not used, only the numbers with value 0 are filled
     .map((_, index) => ({ number: index + 1, value: 0 }));
 
   // loop through options and then all sets.slots to add the slotvalues
@@ -243,8 +245,9 @@ function slotValue(optionsArray) {
   return data;
 }
 
-// function to trim an options array by the visible numbers
 // does not work as intended, needs to filter based on SLOT POSITION - NOT NUMBER !!!!!
+// couldnt improve it - always makes the code end up being caught in an infinite loop of accessing the wrong slot.
+// function to trim an options array by the visible numbers
 function trimOptions(opts, fulln, visibs) {
   let toTrim = [];
   let trimmedOpts = opts;
@@ -270,12 +273,20 @@ function trimOptions(opts, fulln, visibs) {
 
 // function to calculate the factorial of a number
 function fact(n) {
+  // avoid calculation
+  if (n == 0) {
+    return 1;
+  } else if (n < 0) {
+    // add error for using negative numbers
+    throw new Error("Dont input a negative number");
+  }
   let res = 1;
   for (let i = 1; i <= n; i++) {
     res *= i;
   }
   return res;
 }
+
 // math based solving function
 // calculate all possible results for sets with no, one, two or all three slots revealed
 // use prize values and amount of options
