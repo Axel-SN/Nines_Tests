@@ -41,6 +41,7 @@ function threebythreeNines(nineArray, highlights) {
 function threebythreeFinal(nineArray, visibles, input) {
   let colourSlots = slotsFromName(input);
 
+  // create array for coloured numbers, map the different colours on the index based on being included in colourslots
   const tempColours = nineArray.map((num, index) =>
     colourSlots.includes(index + 1)
       ? chalk.yellowBright(num)
