@@ -5,6 +5,18 @@ Based on this cross sum value the player receives a prize (weighted towards very
 
 The goal is to simulate this minigame as well as using math to try and find out the optimal way of solving it to have the highest chances of a big prize.
 
+Update: 07-03
+
+- done a couple of minor function cleanups and adjustments, checking for performance bottlenecks
+- noticed a lot of unclean code and abuse of global variables which made it so that trying to change certain functions would leave the program in endless loops because certain changes needed to affect global variables, even though it was not intended that way
+- came to a decision after trying to clean up the code:
+  **Rewrite the program, using OOP**
+  - ensures cleaner abstraction of functionality and information for each specific game session
+  - only affecting class internal data, no global variables
+  - lets me track and pass information of each playthrough easier
+  - using the randomized array and starting point to create a game session ID makes it so any configuration can be tested and debugged (isolated from randomness)
+  - collect all final information after a playthrough to analyze and display it 
+
 Update: 25-02
 
 - It is not possible to play through a set amount of configurations after each other
