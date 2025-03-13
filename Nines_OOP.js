@@ -79,11 +79,11 @@ class NinesGame {
       { name: "row1", set: this.row1, slots: [1, 2, 3] },
       { name: "row2", set: this.row2, slots: [4, 5, 6] },
       { name: "row3", set: this.row3, slots: [7, 8, 9] },
-      { name: "column1", set: this.column1, slots: [1, 2, 3] },
-      { name: "column2", set: this.column2, slots: [1, 2, 3] },
-      { name: "column3", set: this.column3, slots: [1, 2, 3] },
-      { name: "diagonal left", set: this.diagonalLeft, slots: [1, 2, 3] },
-      { name: "diagonal right", set: this.diagonalRight, slots: [1, 2, 3] },
+      { name: "column1", set: this.column1, slots: [1, 4, 7] },
+      { name: "column2", set: this.column2, slots: [2, 5, 8] },
+      { name: "column3", set: this.column3, slots: [3, 6, 9] },
+      { name: "diagonal left", set: this.diagonalLeft, slots: [1, 5, 9] },
+      { name: "diagonal right", set: this.diagonalRight, slots: [3, 5, 7] },
     ];
     this.prize = null;
   }
@@ -154,11 +154,12 @@ class NinesGame {
     this.visibles.push(visib);
   }
 
-  checkVisible(visib) {
-    if (visib <= 9 && visib >= 1) {
-      return !this.visibles.includes(visib - 1);
+  // alwasy pre format slot 1 -> pass 0
+  checkIfVisible(visib) {
+    if (this.visibles.includes(visib)) {
+      return true;
     }
-    return null;
+    return false;
   }
 
   prizeFromSum(sumNumber) {
@@ -180,17 +181,26 @@ class NinesGame {
   revealSlotManually() {
     let unrevealed = false;
     let input = "";
+    let nineSet = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 
     do {
       input = prompt(chalk.blue("Which slot do you want to reveal? (1-9) "));
       input = parseInt(input);
-      unrevealed = this.checkVisible(input);
-      if (unrevealed) {
-        console.log("Slot " + input + " was revealed!");
-        this.addVisible(input - 1);
-        this.threebythreeHighlighted(this.visibles);
+      if (nineSet.has(input - 1)) {
+        unrevealed = !this.checkIfVisible(input - 1);
+        if (unrevealed) {
+          console.log("Slot " + input + " was revealed!");
+          this.addVisible(input - 1);
+          this.threebythreeHighlighted(this.visibles);
+        } else {
+          console.log(chalk.red("This slot is already revealed!"));
+        }
       } else {
-        console.log(chalk.red("This slot is already revealed!"));
+        console.log(
+          chalk.red(
+            "Please select a slot (1, 2, 3, 4, 5, 6, 7, 8, 9) that is not revealed yet."
+          )
+        );
       }
     } while (!unrevealed);
   }
@@ -219,6 +229,12 @@ class NinesGame {
       );
       if (options.has(input)) {
         choiceMade = true;
+      } else {
+        console.log(
+          chalk.red(
+            "Please type in a valid input: (Allowed inputs are: row1, row2, row3, column1, colum2, column3, diagonal left, diagonal right)"
+          )
+        );
       }
     } while (!choiceMade);
 
@@ -235,7 +251,11 @@ class NinesGame {
           this.prizeFromSet(n.set) +
           " is your prize.";
         this.prize = this.prizeFromSet(n.set);
-        this.threebythreeFinal(n.set);
+        this.threebythreeFinal([
+          n.slots[0] - 1,
+          n.slots[1] - 1,
+          n.slots[2] - 1,
+        ]);
         console.log(winningText);
         console.log("end");
       }
@@ -258,9 +278,13 @@ class NinesGame {
     // testing:
     this.threebythreeHighlighted(this.visibles);
     console.log(this.visibles);
+    console.log("First reveal:");
     this.revealSlotManually();
+    console.log("Second reveal:");
     this.revealSlotManually();
+    console.log("Third reveal:");
     this.revealSlotManually();
+    console.log("Set choice:");
     this.chooseSetManually();
   }
 
@@ -309,7 +333,7 @@ class NinesGame {
 
     // create array for coloured numbers, map the different colours on the index based on being included in colourslots
     const tempColours = this.nineArray.map((num, index) =>
-      colourSlots.includes(index + 1)
+      colourSlots.includes(index)
         ? chalk.yellowBright(num)
         : chalk.magentaBright(num)
     );
@@ -354,7 +378,7 @@ testGame2.chooseSetManually();
 console.log(testGame2.structure[0]);
  */
 const gameHistory = [];
-console.log(testGame2.visibles);
-testGame2.gameStart();
-gameHistory.push(testGame2.getGameResult());
+console.log(testGame.visibles);
+testGame.gameStart();
+gameHistory.push(testGame.getGameResult());
 console.log(gameHistory);
