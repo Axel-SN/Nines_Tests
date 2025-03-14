@@ -62,6 +62,7 @@ class NinesGame {
   visibles = [];
   structure = [];
   prize;
+  ninesFull = [];
 
   constructor(gameID = null) {
     // basic idea, change still maybe
@@ -75,15 +76,68 @@ class NinesGame {
     }
 
     this.visibles = [this.startingSlot - 1];
+    this.ninesFull = [
+      { value: this.nineArray[0], visib: false },
+      { value: this.nineArray[1], visib: false },
+      { value: this.nineArray[2], visib: false },
+      { value: this.nineArray[3], visib: false },
+      { value: this.nineArray[4], visib: false },
+      { value: this.nineArray[5], visib: false },
+      { value: this.nineArray[6], visib: false },
+      { value: this.nineArray[7], visib: false },
+      { value: this.nineArray[8], visib: false },
+    ];
+    this.ninesFull[this.startingSlot - 1].visib = true;
+
     this.structure = [
-      { name: "row1", set: this.row1, slots: [1, 2, 3] },
-      { name: "row2", set: this.row2, slots: [4, 5, 6] },
-      { name: "row3", set: this.row3, slots: [7, 8, 9] },
-      { name: "column1", set: this.column1, slots: [1, 4, 7] },
-      { name: "column2", set: this.column2, slots: [2, 5, 8] },
-      { name: "column3", set: this.column3, slots: [3, 6, 9] },
-      { name: "diagonal left", set: this.diagonalLeft, slots: [1, 5, 9] },
-      { name: "diagonal right", set: this.diagonalRight, slots: [3, 5, 7] },
+      {
+        name: "row1",
+        set: this.row1,
+        setFull: this.row1Full,
+        slots: [1, 2, 3],
+      },
+      {
+        name: "row2",
+        set: this.row2,
+        setFull: this.row2Full,
+        slots: [4, 5, 6],
+      },
+      {
+        name: "row3",
+        set: this.row3,
+        setFull: this.row3Full,
+        slots: [7, 8, 9],
+      },
+      {
+        name: "column1",
+        set: this.column1,
+        setFull: this.column1Full,
+        slots: [1, 4, 7],
+      },
+      {
+        name: "column2",
+        set: this.column2,
+        setFull: this.column2Full,
+        slots: [2, 5, 8],
+      },
+      {
+        name: "column3",
+        set: this.column3,
+        setFull: this.column3Full,
+        slots: [3, 6, 9],
+      },
+      {
+        name: "diagonal left",
+        set: this.diagonalLeft,
+        setFull: this.diagonalLeftFull,
+        slots: [1, 5, 9],
+      },
+      {
+        name: "diagonal right",
+        set: this.diagonalRight,
+        setFull: this.diagonalRightFull,
+        slots: [3, 5, 7],
+      },
     ];
     this.prize = null;
   }
@@ -96,6 +150,10 @@ class NinesGame {
     return this.nineArray;
   }
 
+  get ninesFull() {
+    return this.ninesFull;
+  }
+
   get startingSlot() {
     return this.startingSlot;
   }
@@ -103,7 +161,40 @@ class NinesGame {
   get visibles() {
     return this.visibles;
   }
+  ////
 
+  get row1Full() {
+    return [this.ninesFull[0], this.ninesFull[1], this.ninesFull[2]];
+  }
+
+  get row2Full() {
+    return [this.ninesFull[3], this.ninesFull[4], this.ninesFull[5]];
+  }
+
+  get row3Full() {
+    return [this.ninesFull[6], this.ninesFull[7], this.ninesFull[8]];
+  }
+
+  get column1Full() {
+    return [this.ninesFull[0], this.ninesFull[3], this.ninesFull[6]];
+  }
+
+  get column2Full() {
+    return [this.ninesFull[1], this.ninesFull[4], this.ninesFull[7]];
+  }
+
+  get column3Full() {
+    return [this.ninesFull[2], this.ninesFull[5], this.ninesFull[8]];
+  }
+
+  get diagonalLeftFull() {
+    return [this.ninesFull[0], this.ninesFull[4], this.ninesFull[8]];
+  }
+
+  get diagonalRightFull() {
+    return [this.ninesFull[2], this.ninesFull[4], this.ninesFull[6]];
+  }
+  ////
   get row1() {
     return [this.nineArray[0], this.nineArray[1], this.nineArray[2]];
   }
@@ -146,12 +237,10 @@ class NinesGame {
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
 
-  // makes a slot visible, the visib argument should be formatted for array input, so slot 3 -> pass 2
+  // makes a slot visible, the visib argument should be formatted and pre checked for array input, so slot 3 -> pass 2
   addVisible(visib) {
-    /* const tempArray = [...this.visibles];
-    tempArray.push(visib);
-    this.visibles = tempArray; */
     this.visibles.push(visib);
+    this.ninesFull[visib].visib = true;
   }
 
   // alwasy pre format slot 1 -> pass 0
@@ -176,6 +265,36 @@ class NinesGame {
   prizeFromSet(setNumbers) {
     const sumNumber = crossSum(setNumbers);
     return this.prizeFromSum(sumNumber);
+  }
+
+  // function to get the slots of a given set
+  slotsFromName(name) {
+    const slots = {
+      row1: [1, 2, 3],
+      row2: [4, 5, 6],
+      row3: [7, 8, 9],
+      column1: [1, 4, 7],
+      column2: [2, 5, 8],
+      column3: [3, 6, 9],
+      "diagonal left": [1, 5, 9],
+      "diagonal right": [3, 5, 7],
+    };
+
+    if (slots[name]) {
+      return slots[name];
+    } else {
+      console.log(chalk.red(`I think something broke. You typed: ${name}`));
+      // to note the error
+      return null;
+    }
+  }
+
+  // Function to return all currently urevealed number slots of a given set of nine numbers
+  unrevealedNumbers() {
+    // change from multiple arrays to a set for quicker lookup functionality
+    const toCut = new Set(this.visibles.map((i) => this.nineArray[i]));
+    // return only the numbers that arent in toCut
+    return this.nineArray.filter((number) => !toCut.has(number));
   }
 
   revealSlotManually() {
@@ -262,6 +381,289 @@ class NinesGame {
     });
   }
 
+  // function to tally value amounts for given slots
+  slotValue(optionsArray) {
+    // create the data array by filling it instead of a lengthy list manually, using map to increase the index number and keeping the starting value to 0
+    let data = Array(9)
+      .fill({ value: 0 })
+      // _ as a throwaway variable because its not used, only the numbers with value 0 are filled
+      .map((_, index) => ({ number: index + 1, value: 0 }));
+
+    // loop through options and then all sets.slots to add the slotvalues
+    optionsArray.forEach((set) => {
+      set.slots.forEach((slot) => {
+        // adding values, slot-1 for index
+        data[slot - 1].value += set.value;
+      });
+    });
+
+    return data;
+  }
+
+  // put in a code word for calling the function
+  // bestSlot = return the best slot
+  // bestSet = return the best set
+  // bestReveal = log the best reveal choice
+  // bestSet = log the best set choice
+  solverMath() {
+    const leftovers = this.unrevealedNumbers();
+    let options = [];
+    let amount = 0;
+    let count = 0;
+    let best = { option: "abc", value: 0 };
+    let logInfo = false;
+
+    this.structure.forEach(
+      function (element) {
+        if (
+          element.setFull[0].visib &&
+          element.setFull[1].visib &&
+          element.setFull[2].visib
+        ) {
+          // case for all 3 elements visible
+          if (logInfo) {
+            console.log(chalk.red("test3 " + element.name));
+
+            console.log(
+              chalk.green(
+                "Value if you choose this option: " +
+                  crossSum(element.set) +
+                  ": " +
+                  this.prizeFromSet(element.set)
+              )
+            );
+          }
+          options.push({
+            option: element.name,
+            value: this.prizeFromSet(element.set),
+            slots: this.slotsFromName(element.name),
+          });
+        } else if (
+          (element.setFull[0].visib &&
+            element.setFull[1].visib &&
+            !element.setFull[2].visib) ||
+          (element.setFull[1].visib &&
+            element.setFull[2].visib &&
+            !element.setFull[0].visib) ||
+          (element.setFull[0].visib &&
+            element.setFull[2].visib &&
+            !element.setFull[1].visib)
+        ) {
+          // case for 2 elements visible
+          let twos = [];
+          amount = 0;
+          count = 0;
+          if (logInfo) {
+            console.log(chalk.red("test2 " + element.name));
+          }
+
+          if (element.setFull[0].visib) {
+            twos.push(element.set[0]);
+          }
+          if (element.setFull[1].visib) {
+            twos.push(element.set[1]);
+          }
+          if (element.setFull[2].visib) {
+            twos.push(element.set[2]);
+          }
+          if (logInfo) {
+            console.log(twos + " " + element.name);
+          }
+          leftovers.forEach(
+            function (left) {
+              if (logInfo) {
+                console.log(
+                  "Possible crossum: " +
+                    (crossSum(twos) + left) +
+                    " with the prize: " +
+                    this.prizeFromSum(crossSum(twos) + left)
+                );
+              }
+              count++;
+              amount = amount + this.prizeFromSum(crossSum(twos) + left);
+            }.bind(this)
+          );
+          if (logInfo) {
+            console.log("Amount of options: " + count);
+            console.log("Total prize amounts: " + amount);
+            console.log(
+              chalk.green(
+                "Average value of choosing this option: " + amount / count
+              )
+            );
+          }
+          options.push({
+            option: element.name,
+            value: amount / count,
+            slots: this.slotsFromName(element.name),
+          });
+        } else if (
+          (element.setFull[0].visib &&
+            !element.setFull[1].visib &&
+            !element.setFull[2].visib) ||
+          (!element.setFull[0].visib &&
+            element.setFull[1].visib &&
+            !element.setFull[2].visib) ||
+          (!element.setFull[0].visib &&
+            !element.setFull[1].visib &&
+            element.setFull[2].visib)
+        ) {
+          // case for only one element being visible
+          if (logInfo) {
+            console.log(chalk.red("test1 " + element.name));
+          }
+          amount = 0;
+          count = 0;
+
+          let duoSets = [];
+          let onlyOne = 999;
+
+          for (let i = 0; i < leftovers.length - 1; i++) {
+            for (let j = i + 1; j < leftovers.length; j++) {
+              duoSets.push([leftovers[i], leftovers[j]]);
+            }
+          }
+          if (logInfo) {
+            console.log(
+              chalk.magentaBright("Only 1 Element visible in: " + element.name)
+            );
+          }
+
+          if (element.setFull[0].visib) {
+            onlyOne = element.set[0];
+          } else if (element.setFull[1].visib) {
+            onlyOne = element.set[1];
+          } else if (element.setFull[2].visib) {
+            onlyOne = element.set[2];
+          }
+
+          let oneDuo = [];
+
+          duoSets.forEach(
+            function (duo) {
+              oneDuo = [onlyOne, duo[0], duo[1]];
+              if (logInfo) {
+                console.log(
+                  "Possible crossum: " +
+                    crossSum(oneDuo) +
+                    " with the prize: " +
+                    this.prizeFromSet(oneDuo)
+                );
+              }
+
+              count++;
+              amount = amount + this.prizeFromSet(oneDuo);
+            }.bind(this)
+          );
+          if (logInfo) {
+            console.log("Amount of options: " + count);
+            console.log("Total prize amounts: " + amount);
+            console.log(
+              chalk.green(
+                "Average value of choosing this option: " + amount / count
+              )
+            );
+          }
+          options.push({
+            option: element.name,
+            value: amount / count,
+            slots: this.slotsFromName(element.name),
+          });
+        } else if (
+          !element.setFull[0].visib &&
+          !element.setFull[1].visib &&
+          !element.setFull[2].visib
+        ) {
+          // case for all three elements are invisible
+          amount = 0;
+          count = 0;
+          if (logInfo) {
+            console.log(chalk.red("test0 " + element.name));
+          }
+          let triSets = [];
+
+          for (let i = 0; i < leftovers.length - 1; i++) {
+            for (let j = i + 1; j < leftovers.length; j++) {
+              for (let k = j + 1; k < leftovers.length; k++) {
+                triSets.push([leftovers[i], leftovers[j], leftovers[k]]);
+              }
+            }
+          }
+          if (logInfo) {
+            console.log(
+              chalk.magentaBright("All Elements invisible in: " + element.name)
+            );
+          }
+
+          triSets.forEach(
+            function (tri) {
+              if (logInfo) {
+                console.log(
+                  "Possible crossum: " +
+                    crossSum(tri) +
+                    " with the prize: " +
+                    this.prizeFromSet(tri)
+                );
+              }
+
+              count++;
+              amount = amount + this.prizeFromSet(tri);
+            }.bind(this)
+          );
+          if (logInfo) {
+            console.log("Amount of options: " + count);
+            console.log("Total prize amounts: " + amount);
+            console.log(
+              chalk.green(
+                "Average value of choosing this option: " + amount / count
+              )
+            );
+          }
+
+          options.push({
+            option: element.name,
+            value: amount / count,
+            slots: this.slotsFromName(element.name),
+          });
+        }
+      }.bind(this)
+    );
+
+    console.log(options);
+
+    let slotvalues = this.slotValue(options);
+
+    let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
+
+    if (logInfo) {
+      console.log(
+        chalk.blue("Unrevealed slot values sorted by value descending")
+      );
+      console.log(slotvaluesSorted);
+
+      console.log(
+        chalk.yellow(
+          "The best slot to reveal is: " + slotvaluesSorted[0].number
+        )
+      );
+    }
+    options.forEach(function (opt) {
+      if (opt.value > best.value) {
+        best.option = opt.option;
+        best.value = opt.value;
+      }
+    });
+
+    console.log(
+      chalk.yellow(
+        "The best option is: " +
+          best.option +
+          " - with an average prize of: " +
+          best.value
+      )
+    );
+  }
+
   getGameResult() {
     return {
       nineArray: [...this.nineArray],
@@ -284,6 +686,7 @@ class NinesGame {
     this.revealSlotManually();
     console.log("Third reveal:");
     this.revealSlotManually();
+    this.solverMath();
     console.log("Set choice:");
     this.chooseSetManually();
   }
@@ -382,3 +785,7 @@ console.log(testGame.visibles);
 testGame.gameStart();
 gameHistory.push(testGame.getGameResult());
 console.log(gameHistory);
+//console.log(testGame.unrevealedNumbers());
+//console.log(testGame.ninesFull);
+//console.log(testGame.structure);
+//console.log(testGame.structure[0].setFull);
