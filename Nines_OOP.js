@@ -33,6 +33,90 @@ function crossSum(array) {
   return array.reduce((sum, number) => sum + number, 0);
 }
 
+function analyzeGamehistory(gameHistory) {
+  let hvBoards = 0;
+  let prizeAverages = 0;
+  let prizeTotal = 0;
+  let prizesOverAvg = 0;
+  let possibleOTTs = 0;
+  let possibleSENs = 0;
+  let possibleOTTSENs = 0;
+  let ottsFound = 0;
+  let sensFound = 0;
+  let missedOTTs = 0;
+  let missedSENs = 0;
+  let ottFindP = 0;
+  let senFindP = 0;
+  let overAvgP = 0;
+  let hvBoardP = 0;
+
+  gameHistory.forEach(function (gh) {
+    prizeAverages += gh.averagePrize;
+    prizeTotal += gh.prize;
+
+    if (gh.highValueBoard) {
+      hvBoards++;
+    }
+    if (gh.prizeOverAvg) {
+      prizesOverAvg++;
+    }
+    if (gh.possibleOTT) {
+      possibleOTTs++;
+    }
+    if (gh.possibleSEN) {
+      possibleSENs++;
+    }
+    if (gh.foundOTT) {
+      ottsFound++;
+    }
+    if (gh.foundSEN) {
+      sensFound++;
+    }
+    if (gh.possibleOTTSEN) {
+      possibleOTTSENs++;
+    }
+
+    if (gh.possibleOTT && !gh.foundOTT) {
+      missedOTTs++;
+    }
+    if (gh.possibleSEN && !gh.foundSEN) {
+      missedSENs++;
+    }
+  });
+
+  overAvgP = prizesOverAvg / (gameHistory.length / 100);
+  if (possibleOTTs > 0) {
+    ottFindP = ottsFound / (possibleOTTs / 100);
+  }
+  if (possibleSENs > 0) {
+    senFindP = sensFound / (possibleSENs / 100);
+  }
+  hvBoardP = hvBoards / (gameHistory.length / 100);
+
+  let results = [
+    {
+      gamesPlayed: gameHistory.length,
+      highValueBoards: hvBoards,
+      highValueBoardPercentage: hvBoardP + "%",
+      possibleOTTs: possibleOTTs,
+      missedOTTs: missedOTTs,
+      foundOTTs: ottsFound,
+      ottFoundPercentage: ottFindP + "%",
+      possibleSENs: possibleSENs,
+      missedSENs: missedSENs,
+      foundSENs: sensFound,
+      senFoundPercentage: senFindP + "%",
+      resultsOverAverage: prizesOverAvg,
+      overAveragePercentage: overAvgP + "%",
+      allAverageValues: prizeAverages,
+      allAchievedPrizes: prizeTotal,
+      achievedVSaverageDifference: prizeTotal - prizeAverages,
+    },
+  ];
+
+  return results;
+}
+
 class NinesGame {
   // an array to showcase the prizes available for each cross sum
   prizes = [
@@ -63,6 +147,7 @@ class NinesGame {
   structure = [];
   prize;
   ninesFull = [];
+  autoLog = false;
 
   constructor(gameID = null) {
     // basic idea, change still maybe
@@ -400,12 +485,35 @@ class NinesGame {
     return data;
   }
 
+  trimOptions(opts) {
+    let toTrim = [];
+    let trimmedOpts = opts;
+    let index = -99;
+    for (let i = 0; i < this.visibles.length; i++) {
+      toTrim.push(this.ninesFull[this.visibles[i]]);
+    }
+
+    //console.log("// numbers to trim: " + toTrim);
+
+    this.visibles.forEach(function (trimmer) {
+      index = trimmedOpts.findIndex((x) => x.number == trimmer + 1);
+      if (index > -1) {
+        trimmedOpts.splice(index, 1);
+      }
+    });
+
+    //console.log(chalk.red("errr lets see?"));
+    //console.log(trimmedOpts);
+
+    return trimmedOpts;
+  }
+
   // put in a code word for calling the function
   // bestSlot = return the best slot
   // bestSet = return the best set
   // bestReveal = log the best reveal choice
   // bestSet = log the best set choice
-  solverMath() {
+  solverMath(output) {
     const leftovers = this.unrevealedNumbers();
     let options = [];
     let amount = 0;
@@ -629,11 +737,15 @@ class NinesGame {
       }.bind(this)
     );
 
-    console.log(options);
+    if (logInfo) {
+      console.log(options);
+    }
 
     let slotvalues = this.slotValue(options);
 
     let slotvaluesSorted = slotvalues.sort((a, b) => b.value - a.value);
+
+    slotvaluesSorted = this.trimOptions(slotvaluesSorted);
 
     if (logInfo) {
       console.log(
@@ -647,6 +759,11 @@ class NinesGame {
         )
       );
     }
+
+    if (output === "bestSlot") {
+      return slotvaluesSorted[0].number;
+    }
+
     options.forEach(function (opt) {
       if (opt.value > best.value) {
         best.option = opt.option;
@@ -654,22 +771,51 @@ class NinesGame {
       }
     });
 
-    console.log(
-      chalk.yellow(
-        "The best option is: " +
-          best.option +
-          " - with an average prize of: " +
-          best.value
-      )
-    );
+    if (logInfo) {
+      console.log(
+        chalk.yellow(
+          "The best option is: " +
+            best.option +
+            " - with an average prize of: " +
+            best.value
+        )
+      );
+    }
+
+    if (output === "bestSet") {
+      return best.option;
+    }
   }
 
-  getGameResult() {
-    return {
-      nineArray: [...this.nineArray],
-      visibles: [...this.visibles],
-      prize: this.prize,
-    };
+  revealAuto(slot) {
+    if (this.autoLog) {
+      if (this.visibles.length == 1) {
+        console.log("First reveal:");
+      } else if (this.visibles.length == 2) {
+        console.log("Second reveal:");
+      } else if (this.visibles.length == 3) {
+        console.log("Third reveal:");
+      }
+    }
+    this.addVisible(slot - 1);
+    if (this.autoLog) {
+      this.threebythreeHighlighted(this.visibles);
+    }
+  }
+
+  chooseSetAuto(set) {
+    let choice = this.structure.find((struc) => struc.name === set);
+
+    if (this.autoLog) {
+      console.log(choice);
+
+      this.threebythreeFinal([
+        choice.slots[0] - 1,
+        choice.slots[1] - 1,
+        choice.slots[2] - 1,
+      ]);
+    }
+    this.prize = this.prizeFromSet(choice.set);
   }
 
   gameStart() {
@@ -681,14 +827,88 @@ class NinesGame {
     this.threebythreeHighlighted(this.visibles);
     console.log(this.visibles);
     console.log("First reveal:");
+    console.log(this.solverMath("bestSlot"));
     this.revealSlotManually();
     console.log("Second reveal:");
+    console.log(this.solverMath("bestSlot"));
     this.revealSlotManually();
     console.log("Third reveal:");
+    console.log(this.solverMath("bestSlot"));
     this.revealSlotManually();
-    this.solverMath();
+    //this.solverMath();
+    console.log(this.solverMath("bestSet"));
     console.log("Set choice:");
     this.chooseSetManually();
+  }
+
+  gameStartAuto() {
+    this.revealAuto(this.solverMath("bestSlot"));
+    this.revealAuto(this.solverMath("bestSlot"));
+    this.revealAuto(this.solverMath("bestSlot"));
+    this.chooseSetAuto(this.solverMath("bestSet"));
+  }
+
+  averageValue() {
+    let amount = 0;
+    this.structure.forEach(
+      function (str) {
+        amount += this.prizeFromSet(str.set);
+      }.bind(this)
+    );
+
+    return amount;
+  }
+
+  getGameResult() {
+    let hvBoard = false;
+    let ott = false;
+    let sen = false;
+    let ottsen = false;
+    let overavg = false;
+    let ottfound = false;
+    let senfound = false;
+
+    if (this.averageValue() / 8 < this.prize) {
+      overavg = true;
+    }
+
+    this.structure.forEach(
+      function (str) {
+        //
+        if (crossSum(str.set) == 6) {
+          ott = true;
+        }
+        if (crossSum(str.set) == 24) {
+          sen = true;
+        }
+      }.bind(this)
+    );
+
+    if (ott && sen) {
+      ottsen = true;
+    }
+
+    if (ott && this.prize == 10000) {
+      ottfound = true;
+    }
+    if (sen && this.prize == 3600) {
+      senfound = true;
+    }
+
+    return {
+      gameID: this.gameID,
+      nineArray: [...this.nineArray],
+      visibles: [...this.visibles],
+      highValueBoard: ott || sen,
+      possibleOTT: ott,
+      foundOTT: ottfound,
+      possibleSEN: sen,
+      foundSEN: senfound,
+      possibleOTTSEN: ott && sen,
+      averagePrize: this.averageValue() / 8,
+      prize: this.prize,
+      prizeOverAvg: overavg,
+    };
   }
 
   // A funtion to output an array containing nine elements in a three by three format to showcase rows and columns better
@@ -744,7 +964,26 @@ class NinesGame {
   }
 }
 
-console.log(chalk.red("TEST"));
+function simulateGames() {
+  let simulations = 1000000;
+  let gameHistory = [];
+
+  for (let i = 0; i < simulations; i++) {
+    let testGame = new NinesGame();
+    testGame.gameStartAuto();
+    gameHistory.push(testGame.getGameResult());
+  }
+
+  console.log(analyzeGamehistory(gameHistory));
+}
+
+// Measure execution time of a function
+function measureExecutionTime(label, func) {
+  const start = performance.now();
+  func();
+  const end = performance.now();
+  console.log(`${label} took ${(end - start).toFixed(4)} ms`);
+}
 
 const prompt = promptSync();
 
@@ -754,8 +993,8 @@ console.log(testGame.startingSlot);
 console.log(testGame.visibles);
 console.log(testGame.gameID); */
 
-let testGame = new NinesGame();
-let testGame2 = new NinesGame("614735892_4");
+/* let testGame = new NinesGame();
+let testGame2 = new NinesGame("897654321_2"); */
 /* console.log(testGame2.nineArray);
 console.log(testGame2.startingSlot);
 testGame2.addVisible(1);
@@ -780,12 +1019,23 @@ testGame2.threebythreeHighlighted(testGame2.visibles);
 testGame2.chooseSetManually();
 console.log(testGame2.structure[0]);
  */
-const gameHistory = [];
-console.log(testGame.visibles);
-testGame.gameStart();
-gameHistory.push(testGame.getGameResult());
-console.log(gameHistory);
+/* const gameHistory = []; */
+//console.log(testGame.visibles);
+//testGame.gameStartAuto();
+//gameHistory.push(testGame.getGameResult());
+//console.log(gameHistory);
+//console.log(analyzeGamehistory(gameHistory));
 //console.log(testGame.unrevealedNumbers());
 //console.log(testGame.ninesFull);
 //console.log(testGame.structure);
 //console.log(testGame.structure[0].setFull);
+
+/* for (let i = 0; i < 10; i++) {
+  let testGame = new NinesGame();
+  testGame.gameStartAuto();
+  gameHistory.push(testGame.getGameResult());
+}
+console.log(analyzeGamehistory(gameHistory));
+ */
+//simulateGames();
+measureExecutionTime("OOP Coding", simulateGames);
