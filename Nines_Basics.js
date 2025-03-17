@@ -78,7 +78,10 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
   let userControl = false;
   let input;
 
-  console.log("--- first reveal ---");
+  // DELETELOGS
+  if (false) {
+    console.log("--- first reveal ---");
+  }
   for (let i = 0; i < 3; i++) {
     if (userControl) {
       // with user input
@@ -95,7 +98,10 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     if (nineArray.includes(input) && !visibles.includes(input - 1)) {
       visibles.push(input - 1);
       //console.log("for1: " + input + " i: " + i);
-      console.log(chalk.yellowBright("Slot " + input + " was chosen."));
+      // DELETELOGS
+      if (false) {
+        console.log(chalk.yellowBright("Slot " + input + " was chosen."));
+      }
     } else if (nineArray.includes(input) && visibles.includes(input - 1)) {
       console.log(chalk.red("This slot is already revealed!"));
       i--;
@@ -111,11 +117,14 @@ function revealing2(nineArray, visibles, prizes, fullNines) {
     }
     // control output to check if the revealed slots are correct
     //console.log(visibles);
-    threebythreeNines(nineArray, visibles);
-    if (i < 2) {
-      console.log("--- next reveal ---");
-    } else {
-      console.log("--- set choice ---");
+    // DELETELOGS
+    if (false) {
+      threebythreeNines(nineArray, visibles);
+      if (i < 2) {
+        console.log("--- next reveal ---");
+      } else {
+        console.log("--- set choice ---");
+      }
     }
 
     solverMathy(nineArray, visibles, prizes, fullNines, false, 0);
@@ -170,17 +179,20 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
 
     if (optionsFull.some((x) => x.name === input)) {
       inputFound = optionsFull.find((x) => x.name === input).set;
-      console.log(
-        chalk.yellow(input) +
-          selectString +
-          chalk.yellow(inputFound) +
-          sumString +
-          chalk.greenBright(crossSum(inputFound)) +
-          prizeString +
-          chalk.greenBright(
-            prizes[prizeSelect(prizes, crossSum(inputFound))].prize
-          )
-      );
+      // DELETELOGS
+      if (false) {
+        console.log(
+          chalk.yellow(input) +
+            selectString +
+            chalk.yellow(inputFound) +
+            sumString +
+            chalk.greenBright(crossSum(inputFound)) +
+            prizeString +
+            chalk.greenBright(
+              prizes[prizeSelect(prizes, crossSum(inputFound))].prize
+            )
+        );
+      }
       // datapush
       achieveds.push(prizes[prizeSelect(prizes, crossSum(inputFound))].prize);
       whileFlag = false;
@@ -193,7 +205,10 @@ function setSelect2(nineArray, prizes, visibles, fullNines) {
     }
   } while (whileFlag);
 
-  threebythreeFinal(nineArray, visibles, input);
+  // DELETELOGS
+  if (false) {
+    threebythreeFinal(nineArray, visibles, input);
+  }
 }
 
 // Function to return all currently urevealed number slots of a given set of nine numbers
@@ -644,15 +659,17 @@ function solverMathy(nineArray, visibles, prizes, ninesFull, log, flag) {
 
   if (flag == 1 || flag == 3) {
     // if true
-
-    console.log(
-      chalk.yellow(
-        "The best option is: " +
-          best.option +
-          " - with an average prize of: " +
-          best.value
-      )
-    );
+    // DELETELOGS
+    if (false) {
+      console.log(
+        chalk.yellow(
+          "The best option is: " +
+            best.option +
+            " - with an average prize of: " +
+            best.value
+        )
+      );
+    }
 
     return best.option;
   }
@@ -848,6 +865,8 @@ console.log(chalk.green(" //// End of the game ////"));
 //////////////////////////////////////////////////////////////////
 /////////// REPETITION TESTS
 
+const start = performance.now();
+
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 // Actual start of things //
@@ -857,7 +876,7 @@ console.log(chalk.green(" //// End of the game ////"));
 // variables
 const pv = "Prize if you chose ";
 
-let cycles = 10;
+let cycles = 1000;
 
 let startValue = 999;
 
@@ -1059,20 +1078,25 @@ for (let loopp = 0; loopp < cycles; loopp++) {
       )
     );
   }
+  // DELETELOGS
+  if (false) {
+    console.log(chalk.green(" //// Start of the game ////"));
 
-  console.log(chalk.green(" //// Start of the game ////"));
+    console.log(chalk.blue("Three by three with hidden:"));
 
-  console.log(chalk.blue("Three by three with hidden:"));
-
-  threebythreeNines(shuffledNines, visibles);
-  //console.log("--- start ---");
+    threebythreeNines(shuffledNines, visibles);
+    //console.log("--- start ---");
+  }
   gameStart(shuffledNines, visibles, prizes, ninesFull);
-  console.log(
-    chalk.blueBright(
-      "Average achievable prize value on this board configuration was: " +
-        boardValue / 8
-    )
-  );
+  // DELETELOGS
+  if (false) {
+    console.log(
+      chalk.blueBright(
+        "Average achievable prize value on this board configuration was: " +
+          boardValue / 8
+      )
+    );
+  }
 
   // datapush
   allVisibs.push(visibles);
@@ -1111,8 +1135,10 @@ for (let loopp = 0; loopp < cycles; loopp++) {
   });
 
   //console.log("/// " + achieveds + " ///");
-
-  console.log(chalk.green(" //// End of the game ////"));
+  // DELETELOGS
+  if (false) {
+    console.log(chalk.green(" //// End of the game ////"));
+  }
 }
 
 //console.log(dataLog);
@@ -1217,6 +1243,8 @@ primitiveAnalysis = [
 
 console.log("////////");
 console.log(primitiveAnalysis);
+const end = performance.now();
+console.log(`Basics took ${(end - start).toFixed(4)} ms`);
 
 /////////////////////////////////
 // TEST SECTION FOR CODE TESTS //
