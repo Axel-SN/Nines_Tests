@@ -5,6 +5,21 @@ Based on this cross sum value the player receives a prize (weighted towards very
 
 The goal is to simulate this minigame as well as using math to try and find out the optimal way of solving it to have the highest chances of a big prize.
 
+Update: 18-03
+
+- Rewrite in OOP finished
+- now faster and easier to adjust and play
+- some simulations:
+![image](https://github.com/user-attachments/assets/dee55a00-466d-4ce0-a181-ef470940b4f3)
+![image](https://github.com/user-attachments/assets/ed25a85b-502d-45a9-b949-f81145441788)
+- It seems like ~18.x% of all games played have high value prizes
+- 1-2-3 sets are found 97.x% of the time
+- 7-8-9 sets are found ~66% of the time
+- in total around 55% of games played are above average value
+- - but the overall total winnings vs random average choice are way higher
+
+
+
 Update: 07-03
 
 - done a couple of minor function cleanups and adjustments, checking for performance bottlenecks
