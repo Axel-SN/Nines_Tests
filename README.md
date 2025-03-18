@@ -10,8 +10,8 @@ Update: 18-03
 - Rewrite in OOP finished
 - now faster and easier to adjust and play
 - some simulations:
-![image](https://github.com/user-attachments/assets/dee55a00-466d-4ce0-a181-ef470940b4f3)
-![image](https://github.com/user-attachments/assets/ed25a85b-502d-45a9-b949-f81145441788)
+- ![image](https://github.com/user-attachments/assets/dee55a00-466d-4ce0-a181-ef470940b4f3)
+- ![image](https://github.com/user-attachments/assets/ed25a85b-502d-45a9-b949-f81145441788)
 - It seems like ~18.x% of all games played have high value prizes
 - 1-2-3 sets are found 97.x% of the time
 - 7-8-9 sets are found ~66% of the time
