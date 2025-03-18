@@ -965,7 +965,7 @@ class NinesGame {
 }
 
 function simulateGames() {
-  let simulations = 1000000;
+  let simulations = 5000000;
   let gameHistory = [];
 
   for (let i = 0; i < simulations; i++) {
